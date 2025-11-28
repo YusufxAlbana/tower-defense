@@ -75,7 +75,6 @@
             <!-- Map Card 1 -->
             <div class="bg-gray-800 rounded-xl p-4 border-4 border-gray-700 hover:border-blue-500 transition-colors cursor-pointer group flex flex-col" onclick="loadMap(0)">
                 <div class="bg-gray-900 h-40 rounded mb-4 flex items-center justify-center overflow-hidden relative">
-                     <!-- Simple CSS Minimap Representation -->
                      <div class="absolute inset-0 opacity-50 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiMzNzQxNTEiIHN0cm9rZS13aWR0aD0iMSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwWiIvPjwvc3ZnPg==')]"></div>
                      <div class="w-full h-2 bg-blue-500 rotate-12 transform scale-150"></div>
                 </div>
@@ -124,7 +123,7 @@
     </div>
 
     <!-- 3. GAME SCREEN (Hidden by default) -->
-    <div id="gameUI" class="hidden h-screen flex flex-col items-center justify-center w-full">
+    <div id="gameUI" class="hidden h-screen flex flex-col items-center justify-center w-full relative">
         <!-- UI Header -->
         <div class="w-full max-w-4xl p-4 flex justify-between items-center bg-gray-800 rounded-b-xl shadow-lg border-b-4 border-gray-700 z-10 shrink-0">
             <button onclick="quitGame()" class="mr-4 text-gray-400 hover:text-white">
@@ -153,9 +152,46 @@
         </div>
 
         <!-- Game Container -->
-        <div class="relative mt-2 md:mt-4 shadow-2xl rounded-lg overflow-hidden border-4 border-gray-700 bg-gray-900 shrink-0">
+        <div class="relative mt-2 md:mt-4 shadow-2xl rounded-lg overflow-hidden border-4 border-gray-700 bg-gray-900 shrink-0 relative">
             <canvas id="gameCanvas" width="800" height="600" class="max-w-full h-auto max-h-[60vh] md:max-h-[70vh] block"></canvas>
             
+            <!-- Upgrade Menu Overlay (New) -->
+            <div id="upgradeMenu" class="hidden absolute bottom-4 right-4 bg-gray-800/95 border-2 border-yellow-500 rounded-lg p-4 w-64 shadow-2xl backdrop-blur-sm z-20">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 id="upgName" class="font-bold text-yellow-400 text-lg">Tower Name</h3>
+                        <p id="upgLevel" class="text-xs text-gray-400">Level 1</p>
+                    </div>
+                    <button onclick="closeUpgradeMenu()" class="text-gray-500 hover:text-white">x</button>
+                </div>
+                
+                <div class="space-y-2 text-sm text-gray-300 mb-4">
+                    <div class="flex justify-between">
+                        <span>Damage:</span>
+                        <span id="upgDamage" class="font-mono text-white">20</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Range:</span>
+                        <span id="upgRange" class="font-mono text-white">120</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Speed:</span>
+                        <span id="upgSpeed" class="font-mono text-white">40</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="btnUpgradeAction" onclick="upgradeSelectedTower()" class="bg-green-600 hover:bg-green-500 text-white py-2 rounded text-xs font-bold shadow-lg transition-colors flex flex-col items-center justify-center">
+                        <span>UPGRADE</span>
+                        <span id="upgCost" class="text-[10px] text-green-200">Rp 100</span>
+                    </button>
+                    <button onclick="sellSelectedTower()" class="bg-red-600 hover:bg-red-500 text-white py-2 rounded text-xs font-bold shadow-lg transition-colors flex flex-col items-center justify-center">
+                        <span>JUAL</span>
+                        <span id="sellValue" class="text-[10px] text-red-200">Rp 50</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Game Over Screen -->
             <div id="gameOverScreen" class="hidden absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
                 <h2 class="text-3xl md:text-5xl font-bold text-red-500 mb-4 pixel-font text-center leading-tight">GAME OVER</h2>
@@ -170,19 +206,19 @@
         <!-- Tower Selection Footer -->
         <div class="w-full max-w-4xl mt-2 md:mt-4 p-2 bg-gray-800 rounded-t-xl border-t-4 border-gray-700 flex justify-center gap-2 md:gap-4 overflow-x-auto shrink-0 pb-6 md:pb-2">
             
-            <button onclick="selectTower('archer')" id="btn-archer" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-blue-400 w-20 md:w-24 flex-shrink-0 transition-all">
+            <button onclick="selectTowerType('archer')" id="btn-archer" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-blue-400 w-20 md:w-24 flex-shrink-0 transition-all">
                 <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500 border-2 border-white mb-1 shadow-lg group-hover:scale-110 transition-transform"></div>
                 <span class="text-[10px] md:text-xs font-bold">Pemanah</span>
                 <span class="text-[10px] md:text-xs text-yellow-400 font-mono">Rp 50</span>
             </button>
 
-            <button onclick="selectTower('cannon')" id="btn-cannon" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-red-400 w-20 md:w-24 flex-shrink-0 transition-all">
+            <button onclick="selectTowerType('cannon')" id="btn-cannon" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-red-400 w-20 md:w-24 flex-shrink-0 transition-all">
                 <div class="w-6 h-6 md:w-8 md:h-8 rounded bg-red-600 border-2 border-white mb-1 shadow-lg group-hover:scale-110 transition-transform"></div>
                 <span class="text-[10px] md:text-xs font-bold">Meriam</span>
                 <span class="text-[10px] md:text-xs text-yellow-400 font-mono">Rp 120</span>
             </button>
 
-            <button onclick="selectTower('sniper')" id="btn-sniper" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-purple-400 w-20 md:w-24 flex-shrink-0 transition-all">
+            <button onclick="selectTowerType('sniper')" id="btn-sniper" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-purple-400 w-20 md:w-24 flex-shrink-0 transition-all">
                 <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-purple-600 border-4 border-gray-900 mb-1 shadow-lg group-hover:scale-110 transition-transform relative">
                     <div class="absolute inset-0 border border-white rounded-full opacity-50"></div>
                 </div>
@@ -300,7 +336,10 @@
         let projectiles = [];
         let particles = [];
 
-        let selectedTowerType = null;
+        // Build & Select State
+        let selectedTowerType = null; // Tipe tower yang akan dibangun
+        let selectedTowerInstance = null; // Instance tower yang diklik di map
+
         let enemiesToSpawn = 0;
         let waveInProgress = false;
 
@@ -366,12 +405,33 @@
                 this.x = c * TILE_SIZE + TILE_SIZE/2;
                 this.y = r * TILE_SIZE + TILE_SIZE/2;
                 this.type = typeKey;
-                this.stats = TOWER_TYPES[typeKey];
+                // PENTING: Copy object stats agar tidak merubah global TOWER_TYPES
+                this.stats = JSON.parse(JSON.stringify(TOWER_TYPES[typeKey]));
                 this.cooldownTimer = 0;
                 this.angle = 0;
+                this.recoil = 0;
+                
+                // Sistem Level
+                this.level = 1;
+                this.upgradeCost = Math.floor(this.stats.cost * 0.7); // Biaya upgrade awal
+            }
+
+            upgrade() {
+                this.level++;
+                this.stats.damage = Math.floor(this.stats.damage * 1.3); // +30% Damage
+                this.stats.range = Math.floor(this.stats.range * 1.1); // +10% Range
+                this.stats.cooldown = Math.max(5, Math.floor(this.stats.cooldown * 0.9)); // -10% Cooldown (Lebih cepat)
+                
+                // Biaya upgrade selanjutnya naik
+                this.upgradeCost = Math.floor(this.upgradeCost * 1.5);
+                
+                createParticles(this.x, this.y, '#FBBF24'); // Efek emas saat upgrade
             }
 
             update() {
+                // Pulihkan recoil pelan-pelan
+                if (this.recoil > 0) this.recoil = Math.max(0, this.recoil - 0.5);
+
                 if (this.cooldownTimer > 0) this.cooldownTimer--;
 
                 let target = null;
@@ -392,6 +452,8 @@
                     if (this.cooldownTimer <= 0) {
                         this.shoot(target);
                         this.cooldownTimer = this.stats.cooldown;
+                        // Set recoil saat menembak
+                        this.recoil = (this.type === 'sniper') ? 8 : ((this.type === 'cannon') ? 6 : 3);
                     }
                 }
             }
@@ -407,29 +469,60 @@
             draw() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
+                
+                // Draw Level Indicator (Titik di sekitar base)
+                // Hanya gambar jika level > 1
+                if (this.level > 1) {
+                    ctx.fillStyle = '#FBBF24'; // Emas
+                    for (let i = 0; i < this.level; i++) {
+                         ctx.fillRect(-14 + (i * 6), -20, 4, 4);
+                    }
+                }
+
                 ctx.fillStyle = '#374151';
+                // Base menara (kotak abu-abu)
                 ctx.fillRect(-16, -16, 32, 32);
+                
                 ctx.rotate(this.angle);
+
+                // Variabel offset untuk animasi mundur (recoil)
+                const recoilOffset = -this.recoil; 
+
                 ctx.fillStyle = this.stats.color;
                 
                 if(this.type === 'archer') {
+                    // Pemanah: Busur/badan mundur sedikit
+                    ctx.save();
+                    ctx.translate(recoilOffset, 0); 
                     ctx.beginPath();
                     ctx.arc(0, 0, 12, 0, Math.PI*2);
                     ctx.fill();
                     ctx.fillStyle = '#fff';
-                    ctx.fillRect(0, -2, 20, 4);
+                    ctx.fillRect(0, -2, 20, 4); // Arrow/Pointer
+                    ctx.restore();
                 } else if (this.type === 'cannon') {
-                    ctx.fillRect(-10, -10, 20, 20);
+                    // Meriam: Badan diam, Laras mundur
+                    ctx.fillRect(-10, -10, 20, 20); // Badan Turret
+                    
+                    ctx.save();
+                    ctx.translate(recoilOffset, 0); // Animasi Laras
                     ctx.fillStyle = '#000';
-                    ctx.fillRect(0, -8, 24, 16);
+                    ctx.fillRect(0, -8, 24, 16); // Laras
+                    ctx.restore();
                 } else if (this.type === 'sniper') {
+                    // Sniper: Badan segitiga diam
                     ctx.beginPath();
                     ctx.moveTo(10, 0);
                     ctx.lineTo(-10, 10);
                     ctx.lineTo(-10, -10);
                     ctx.fill();
+                    
+                    // Laras panjang mundur
+                    ctx.save();
+                    ctx.translate(recoilOffset, 0);
                     ctx.fillStyle = '#ccc';
                     ctx.fillRect(0, -2, 28, 4);
+                    ctx.restore();
                 }
                 ctx.restore();
             }
@@ -615,7 +708,22 @@
                 }
             }
 
-            // Draw Indicators
+            // Draw Selection Highlight (Jika ada tower yang dipilih)
+            if (selectedTowerInstance) {
+                ctx.beginPath();
+                ctx.arc(selectedTowerInstance.x, selectedTowerInstance.y, selectedTowerInstance.stats.range, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.strokeStyle = '#FBBF24';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(selectedTowerInstance.c * TILE_SIZE, selectedTowerInstance.r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+
+            // Draw Build Preview
             let mx = Math.floor(mouseX / TILE_SIZE) * TILE_SIZE;
             let my = Math.floor(mouseY / TILE_SIZE) * TILE_SIZE;
             
@@ -667,15 +775,12 @@
             currentMapIndex = mapIndex;
             const map = MAP_DATA[mapIndex];
             
-            // Setup Data
-            currentMapGrid = JSON.parse(JSON.stringify(map.grid)); // Deep copy grid
-            // Konversi waypoint grid ke pixel
+            currentMapGrid = JSON.parse(JSON.stringify(map.grid));
             currentWaypoints = map.waypoints.map(p => ({
                 x: p.x * TILE_SIZE + TILE_SIZE/2,
                 y: p.y * TILE_SIZE + TILE_SIZE/2
             }));
 
-            // Reset Game State
             money = 120;
             lives = 20;
             wave = 1;
@@ -686,10 +791,13 @@
             gameOver = false;
             waveInProgress = false;
             enemiesToSpawn = 0;
+            
+            // Reset Selection
             selectedTowerType = null;
+            selectedTowerInstance = null;
+            closeUpgradeMenu();
             updateButtonStyles();
 
-            // UI Changes
             activeScreen = 'game';
             gameActive = true;
             document.getElementById('mapSelectScreen').classList.add('hidden');
@@ -709,6 +817,65 @@
 
         function restartLevel() {
             loadMap(currentMapIndex);
+        }
+
+        // --- SISTEM UPGRADE & UI ---
+
+        function openUpgradeMenu(tower) {
+            selectedTowerInstance = tower;
+            const menu = document.getElementById('upgradeMenu');
+            menu.classList.remove('hidden');
+            updateUpgradeMenuUI();
+        }
+
+        function closeUpgradeMenu() {
+            selectedTowerInstance = null;
+            document.getElementById('upgradeMenu').classList.add('hidden');
+        }
+
+        function updateUpgradeMenuUI() {
+            if (!selectedTowerInstance) return;
+            const t = selectedTowerInstance;
+            
+            document.getElementById('upgName').innerText = t.stats.name;
+            document.getElementById('upgLevel').innerText = `Level ${t.level}`;
+            document.getElementById('upgDamage').innerText = t.stats.damage;
+            document.getElementById('upgRange').innerText = t.stats.range;
+            document.getElementById('upgSpeed').innerText = Math.round(6000/t.stats.cooldown)/100 + '/s'; // Approx fire rate
+            
+            document.getElementById('upgCost').innerText = `Rp ${t.upgradeCost}`;
+            document.getElementById('sellValue').innerText = `Rp ${Math.floor(t.stats.cost * 0.5)}`;
+
+            // Button state
+            const btn = document.getElementById('btnUpgradeAction');
+            if (money >= t.upgradeCost) {
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.disabled = false;
+            } else {
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.disabled = true;
+            }
+        }
+
+        function upgradeSelectedTower() {
+            if (!selectedTowerInstance) return;
+            if (money >= selectedTowerInstance.upgradeCost) {
+                money -= selectedTowerInstance.upgradeCost;
+                selectedTowerInstance.upgrade();
+                updateUI();
+                updateUpgradeMenuUI(); // Refresh stats in menu
+            }
+        }
+
+        function sellSelectedTower() {
+            if (!selectedTowerInstance) return;
+            money += Math.floor(selectedTowerInstance.stats.cost * 0.5);
+            
+            // Hapus tower dari array
+            towers = towers.filter(t => t !== selectedTowerInstance);
+            
+            closeUpgradeMenu();
+            updateUI();
         }
 
         // --- INPUT & EVENT LISTENERS ---
@@ -739,26 +906,42 @@
             const col = Math.floor(pos.x / TILE_SIZE);
             const row = Math.floor(pos.y / TILE_SIZE);
 
-            if (selectedTowerType) {
-                if (currentMapGrid[row] && currentMapGrid[row][col] === 0) { // Bukan jalan
-                    let occupied = towers.some(t => t.c === col && t.r === row);
-                    if (!occupied) {
-                        let cost = TOWER_TYPES[selectedTowerType].cost;
-                        if (money >= cost) {
-                            money -= cost;
-                            towers.push(new Tower(col, row, selectedTowerType));
-                            createParticles(col*TILE_SIZE + 20, row*TILE_SIZE+20, '#fff');
-                            updateUI();
-                        } else {
-                            // alert("Uang tidak cukup!"); // Optional
+            // Cek apakah klik pada Tower yang ada?
+            const clickedTower = towers.find(t => t.c === col && t.r === row);
+
+            if (clickedTower) {
+                // Jika klik tower, buka menu upgrade dan batalkan mode build
+                selectTowerType(null); // Cancel build
+                openUpgradeMenu(clickedTower);
+            } else {
+                // Klik tanah kosong
+                if (selectedTowerType) {
+                    // Logika Build
+                    if (currentMapGrid[row] && currentMapGrid[row][col] === 0) { // Bukan jalan
+                        let occupied = towers.some(t => t.c === col && t.r === row);
+                        if (!occupied) {
+                            let cost = TOWER_TYPES[selectedTowerType].cost;
+                            if (money >= cost) {
+                                money -= cost;
+                                towers.push(new Tower(col, row, selectedTowerType));
+                                createParticles(col*TILE_SIZE + 20, row*TILE_SIZE+20, '#fff');
+                                updateUI();
+                                // Optional: Reset build mode setelah build agar tidak spam
+                                selectTowerType(null); 
+                            }
                         }
                     }
+                } else {
+                    // Klik kosong dan tidak mode build -> tutup menu
+                    closeUpgradeMenu();
                 }
             }
         });
 
-        function selectTower(type) {
+        function selectTowerType(type) {
             selectedTowerType = type;
+            // Jika memilih build, tutup menu upgrade
+            if (type) closeUpgradeMenu();
             updateButtonStyles();
         }
 
@@ -778,14 +961,16 @@
             document.getElementById('moneyDisplay').innerText = `Rp ${money}`;
             document.getElementById('livesDisplay').innerText = lives;
             document.getElementById('waveDisplay').innerText = wave;
+            
+            // Update menu jika sedang terbuka (misal uang berubah karena kill musuh)
+            if (selectedTowerInstance) {
+                updateUpgradeMenuUI();
+            }
         }
 
         document.getElementById('startWaveBtn').addEventListener('click', startWave);
 
-        // Mulai Loop Animasi (selalu berjalan, tapi logika di dalamnya di-pause jika game tidak aktif)
         requestAnimationFrame(gameLoop);
-        
-        // Init awal
         showHome();
 
     </script>
