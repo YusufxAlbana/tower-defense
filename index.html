@@ -128,7 +128,7 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="text-[10px] md:text-xs text-gray-400 uppercase tracking-widest">Uang</span>
-                    <span id="moneyDisplay" class="text-xl md:text-2xl font-bold text-yellow-400">Rp 100</span>
+                    <span id="moneyDisplay" class="text-xl md:text-2xl font-bold text-yellow-400">Rp 200</span>
                 </div>
                 <div class="flex flex-col">
                     <span class="text-[10px] md:text-xs text-gray-400 uppercase tracking-widest">Gelombang</span>
@@ -196,18 +196,37 @@
         <!-- Tower Selection Footer -->
         <div class="w-full max-w-4xl mt-2 md:mt-4 p-2 bg-gray-800 rounded-t-xl border-t-4 border-gray-700 flex justify-center gap-2 md:gap-4 overflow-x-auto shrink-0 pb-6 md:pb-2">
             
+            <!-- Archer -->
             <button onclick="selectTowerType('archer')" id="btn-archer" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-blue-400 w-20 md:w-24 flex-shrink-0 transition-all">
                 <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500 border-2 border-white mb-1 shadow-lg group-hover:scale-110 transition-transform"></div>
                 <span class="text-[10px] md:text-xs font-bold">Pemanah</span>
                 <span class="text-[10px] md:text-xs text-yellow-400 font-mono">Rp 50</span>
             </button>
 
+             <!-- Minigun (NEW) -->
+             <button onclick="selectTowerType('minigun')" id="btn-minigun" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-cyan-400 w-20 md:w-24 flex-shrink-0 transition-all">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-sm bg-cyan-500 border-2 border-white mb-1 shadow-lg group-hover:scale-110 transition-transform"></div>
+                <span class="text-[10px] md:text-xs font-bold">Minigun</span>
+                <span class="text-[10px] md:text-xs text-yellow-400 font-mono">Rp 150</span>
+            </button>
+
+            <!-- Cannon -->
             <button onclick="selectTowerType('cannon')" id="btn-cannon" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-red-400 w-20 md:w-24 flex-shrink-0 transition-all">
                 <div class="w-6 h-6 md:w-8 md:h-8 rounded bg-red-600 border-2 border-white mb-1 shadow-lg group-hover:scale-110 transition-transform"></div>
                 <span class="text-[10px] md:text-xs font-bold">Meriam</span>
                 <span class="text-[10px] md:text-xs text-yellow-400 font-mono">Rp 120</span>
             </button>
 
+            <!-- Tesla (NEW) -->
+            <button onclick="selectTowerType('tesla')" id="btn-tesla" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-amber-400 w-20 md:w-24 flex-shrink-0 transition-all">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-amber-500 border-2 border-white mb-1 shadow-lg group-hover:scale-110 transition-transform relative">
+                     <div class="absolute inset-2 border border-white/50 rounded-full"></div>
+                </div>
+                <span class="text-[10px] md:text-xs font-bold">Tesla</span>
+                <span class="text-[10px] md:text-xs text-yellow-400 font-mono">Rp 250</span>
+            </button>
+
+            <!-- Sniper -->
             <button onclick="selectTowerType('sniper')" id="btn-sniper" class="tower-btn relative group flex flex-col items-center bg-gray-700 p-2 rounded border-2 border-gray-600 hover:bg-gray-600 hover:border-purple-400 w-20 md:w-24 flex-shrink-0 transition-all">
                 <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-purple-600 border-4 border-gray-900 mb-1 shadow-lg group-hover:scale-110 transition-transform relative">
                     <div class="absolute inset-0 border border-white rounded-full opacity-50"></div>
@@ -315,7 +334,7 @@
         let currentWaypoints = [];
         let activeScreen = 'home'; // home, mapSelect, game
 
-        let money = 120;
+        let money = 200;
         let lives = 20;
         let wave = 1;
         let gameActive = false; // Is playing map?
@@ -325,7 +344,7 @@
         let towers = [];
         let projectiles = [];
         let particles = [];
-        let floatingTexts = []; // NEW: Untuk menyimpan teks melayang
+        let floatingTexts = []; 
 
         // Build & Select State
         let selectedTowerType = null; // Tipe tower yang akan dibangun
@@ -337,7 +356,9 @@
         const TOWER_TYPES = {
             archer: { name: 'Pemanah', cost: 50, range: 120, damage: 20, cooldown: 40, color: '#3B82F6', type: 'single' },
             cannon: { name: 'Meriam', cost: 120, range: 100, damage: 60, cooldown: 90, color: '#DC2626', type: 'splash' },
-            sniper: { name: 'Sniper', cost: 200, range: 300, damage: 100, cooldown: 150, color: '#9333EA', type: 'single' }
+            minigun: { name: 'Minigun', cost: 150, range: 80, damage: 8, cooldown: 8, color: '#06B6D4', type: 'single' }, // New
+            sniper: { name: 'Sniper', cost: 200, range: 300, damage: 100, cooldown: 150, color: '#9333EA', type: 'single' },
+            tesla: { name: 'Tesla', cost: 250, range: 110, damage: 45, cooldown: 50, color: '#F59E0B', type: 'single' } // New
         };
 
         // --- CLASSES ---
@@ -491,7 +512,7 @@
                         this.shoot(target);
                         this.cooldownTimer = this.stats.cooldown;
                         // Set recoil saat menembak
-                        this.recoil = (this.type === 'sniper') ? 8 : ((this.type === 'cannon') ? 6 : 3);
+                        this.recoil = (this.type === 'sniper') ? 8 : ((this.type === 'cannon') ? 6 : (this.type === 'minigun' ? 2 : 3));
                     }
                 }
             }
@@ -561,6 +582,24 @@
                     ctx.fillStyle = '#ccc';
                     ctx.fillRect(0, -2, 28, 4);
                     ctx.restore();
+                } else if (this.type === 'minigun') {
+                    // Minigun
+                    ctx.fillRect(-12, -12, 24, 24);
+                    ctx.save();
+                    ctx.translate(recoilOffset, 0);
+                    ctx.fillStyle = '#22D3EE'; // Cyan Barrels
+                    ctx.fillRect(0, -6, 20, 4);
+                    ctx.fillRect(0, 2, 20, 4);
+                    ctx.restore();
+                } else if (this.type === 'tesla') {
+                    // Tesla
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 14, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.fillStyle = '#FEF3C7'; // Inner Core
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 8, 0, Math.PI*2);
+                    ctx.fill();
                 }
                 ctx.restore();
             }
@@ -572,11 +611,12 @@
                 this.y = y;
                 this.target = target;
                 this.damage = damage;
-                this.speed = towerType === 'sniper' ? 20 : (towerType === 'cannon' ? 5 : 8);
+                this.speed = (towerType === 'sniper' || towerType === 'tesla') ? 25 : (towerType === 'minigun' ? 12 : (towerType === 'cannon' ? 5 : 8));
                 this.isSplash = isSplash;
                 this.active = true;
                 this.targetX = target.x;
                 this.targetY = target.y;
+                this.towerType = towerType;
             }
 
             update() {
@@ -608,7 +648,7 @@
                         }
                     });
                 } else {
-                    createParticles(this.x, this.y, '#FFF');
+                    createParticles(this.x, this.y, this.towerType === 'tesla' ? '#F59E0B' : '#FFF');
                     if (this.target && enemies.includes(this.target)) {
                         this.target.hp -= this.damage;
                     }
@@ -618,8 +658,16 @@
 
             draw() {
                 ctx.beginPath();
-                ctx.fillStyle = this.isSplash ? '#000' : '#FFD700';
-                ctx.arc(this.x, this.y, this.isSplash ? 5 : 3, 0, Math.PI*2);
+                if (this.towerType === 'tesla') {
+                     ctx.fillStyle = '#F59E0B'; // Amber
+                     ctx.arc(this.x, this.y, 4, 0, Math.PI*2);
+                } else if (this.towerType === 'minigun') {
+                     ctx.fillStyle = '#06B6D4'; // Cyan
+                     ctx.arc(this.x, this.y, 2, 0, Math.PI*2);
+                } else {
+                     ctx.fillStyle = this.isSplash ? '#000' : '#FFD700';
+                     ctx.arc(this.x, this.y, this.isSplash ? 5 : 3, 0, Math.PI*2);
+                }
                 ctx.fill();
             }
         }
@@ -836,7 +884,7 @@
                 y: p.y * TILE_SIZE + TILE_SIZE/2
             }));
 
-            money = 120;
+            money = 200;
             lives = 20;
             wave = 1;
             enemies = [];
@@ -1003,13 +1051,21 @@
 
         function updateButtonStyles() {
             document.querySelectorAll('.tower-btn').forEach(btn => {
-                btn.classList.remove('border-yellow-400', 'bg-gray-600');
+                btn.classList.remove('border-yellow-400', 'bg-gray-600', 'border-cyan-400', 'border-amber-400');
                 btn.classList.add('border-gray-600', 'bg-gray-700');
             });
             if (selectedTowerType) {
                 const btn = document.getElementById('btn-' + selectedTowerType);
                 btn.classList.remove('border-gray-600', 'bg-gray-700');
-                btn.classList.add('border-yellow-400', 'bg-gray-600');
+                
+                // Custom border color based on type
+                if (selectedTowerType === 'minigun') {
+                     btn.classList.add('border-cyan-400', 'bg-gray-600');
+                } else if (selectedTowerType === 'tesla') {
+                     btn.classList.add('border-amber-400', 'bg-gray-600');
+                } else {
+                     btn.classList.add('border-yellow-400', 'bg-gray-600');
+                }
             }
         }
 
