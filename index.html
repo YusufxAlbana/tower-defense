@@ -17,16 +17,6 @@
             font-family: 'Press Start 2P', cursive;
         }
 
-        /* Animasi kustom */
-        @keyframes pulse-red {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-        }
-        
-        .animate-pulse-red {
-            animation: pulse-red 2s infinite;
-        }
-
         canvas {
             image-rendering: pixelated; 
             cursor: crosshair;
@@ -155,7 +145,7 @@
         <div class="relative mt-2 md:mt-4 shadow-2xl rounded-lg overflow-hidden border-4 border-gray-700 bg-gray-900 shrink-0 relative">
             <canvas id="gameCanvas" width="800" height="600" class="max-w-full h-auto max-h-[60vh] md:max-h-[70vh] block"></canvas>
             
-            <!-- Upgrade Menu Overlay (New) -->
+            <!-- Upgrade Menu Overlay -->
             <div id="upgradeMenu" class="hidden absolute bottom-4 right-4 bg-gray-800/95 border-2 border-yellow-500 rounded-lg p-4 w-64 shadow-2xl backdrop-blur-sm z-20">
                 <div class="flex justify-between items-start mb-2">
                     <div>
@@ -335,6 +325,7 @@
         let towers = [];
         let projectiles = [];
         let particles = [];
+        let floatingTexts = []; // NEW: Untuk menyimpan teks melayang
 
         // Build & Select State
         let selectedTowerType = null; // Tipe tower yang akan dibangun
@@ -350,6 +341,38 @@
         };
 
         // --- CLASSES ---
+        
+        // NEW CLASS: Floating Text
+        class FloatingText {
+            constructor(x, y, text, color) {
+                this.x = x;
+                this.y = y;
+                this.text = text;
+                this.color = color;
+                this.life = 60; // 1 detik (60 frame)
+                this.dy = -1; // Bergerak ke atas
+                this.opacity = 1;
+            }
+
+            update() {
+                this.y += this.dy;
+                this.life--;
+                this.opacity = this.life / 60;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.font = "bold 14px 'Segoe UI'";
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.strokeText(this.text, this.x, this.y);
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.restore();
+            }
+        }
+
         class Enemy {
             constructor(hp, speed, reward) {
                 // Posisi awal di waypoint pertama
@@ -395,6 +418,21 @@
                 ctx.strokeStyle = 'white';
                 ctx.lineWidth = 2;
                 ctx.stroke();
+
+                // NEW: Health Bar kecil di atas musuh
+                const barWidth = 24;
+                const barHeight = 4;
+                const barX = this.x - barWidth / 2;
+                const barY = this.y - this.radius - 8;
+
+                // Background Bar (Merah)
+                ctx.fillStyle = '#EF4444';
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+
+                // Foreground Bar (Hijau)
+                const hpPercent = Math.max(0, this.hp / this.maxHp);
+                ctx.fillStyle = '#22C55E';
+                ctx.fillRect(barX, barY, barWidth * hpPercent, barHeight);
             }
         }
 
@@ -624,9 +662,10 @@
             document.getElementById('startWaveBtn').disabled = true;
             document.getElementById('startWaveBtn').classList.add('opacity-50', 'cursor-not-allowed');
 
+            // Logika Infinite Wave: HP Musuh terus naik tanpa batas
             let count = 5 + Math.floor(wave * 1.5);
-            let hp = 40 + (wave * 25);
-            let speed = 2 + (wave * 0.1);
+            let hp = 40 + (wave * 30); // HP scale lebih agresif agar wave tinggi tetap menantang
+            let speed = Math.min(5, 2 + (wave * 0.1)); // Speed cap di 5 agar tidak bug nembus tembok
             let reward = 10 + Math.floor(wave/2);
 
             enemiesToSpawn = count;
@@ -658,11 +697,24 @@
                 } else if (e.hp <= 0) {
                     money += e.reward;
                     createParticles(e.x, e.y, '#4ADE80');
+                    
+                    // NEW: Munculkan teks floating gold
+                    floatingTexts.push(new FloatingText(e.x, e.y, `+${e.reward}`, '#FACC15')); // Kuning Emas
+                    
                     enemies.splice(i, 1);
                     updateUI();
                 }
             }
 
+            // Update Floating Texts
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                floatingTexts[i].update();
+                if (floatingTexts[i].life <= 0) {
+                    floatingTexts.splice(i, 1);
+                }
+            }
+
+            // Infinite Wave: Otomatis berhenti sejenak, lalu tombol next wave muncul
             if (waveInProgress && enemiesToSpawn === 0 && enemies.length === 0) {
                 waveInProgress = false;
                 wave++;
@@ -749,6 +801,9 @@
             towers.forEach(t => t.draw());
             projectiles.forEach(p => p.draw());
             particles.forEach(p => p.draw());
+            
+            // Draw Floating Texts di atas segalanya
+            floatingTexts.forEach(ft => ft.draw());
 
             requestAnimationFrame(gameLoop);
         }
@@ -788,6 +843,7 @@
             towers = [];
             projectiles = [];
             particles = [];
+            floatingTexts = []; // Reset teks melayang
             gameOver = false;
             waveInProgress = false;
             enemiesToSpawn = 0;
