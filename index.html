@@ -182,13 +182,33 @@
                 </div>
             </div>
 
-            <!-- Game Over Screen -->
-            <div id="gameOverScreen" class="hidden absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
-                <h2 class="text-3xl md:text-5xl font-bold text-red-500 mb-4 pixel-font text-center leading-tight">GAME OVER</h2>
-                <p class="text-xl text-gray-300 mb-8">Markas hancur!</p>
+            <!-- Game Over Screen (UPDATED) -->
+            <div id="gameOverScreen" class="hidden absolute inset-0 bg-black/85 flex flex-col items-center justify-center z-50 p-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-red-500 mb-2 pixel-font text-center leading-tight tracking-wider">GAME OVER</h2>
+                <p class="text-xl text-gray-400 mb-8 tracking-widest uppercase">Markas Hancur!</p>
+                
+                <!-- Stats Box -->
+                <div class="bg-gray-800 p-6 rounded-lg border-2 border-gray-600 mb-8 w-full max-w-xs shadow-2xl">
+                    <h3 class="text-yellow-400 font-bold mb-4 text-center border-b border-gray-600 pb-2 tracking-wide">STATISTIK PERMAINAN</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400 text-sm">Gelombang Dicapai</span>
+                            <span class="text-white font-mono font-bold text-lg" id="statWave">1</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400 text-sm">Musuh Terbunuh</span>
+                            <span class="text-green-400 font-mono font-bold text-lg" id="statKilled">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400 text-sm">Waktu Bermain</span>
+                            <span class="text-blue-400 font-mono font-bold text-lg" id="statTime">0m 0s</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex gap-4">
-                    <button onclick="quitGame()" class="bg-gray-600 text-white font-bold py-3 px-6 rounded hover:bg-gray-500 transition">MENU UTAMA</button>
-                    <button onclick="restartLevel()" class="bg-white text-black font-bold py-3 px-8 rounded hover:bg-gray-200 transition">MAIN LAGI</button>
+                    <button onclick="quitGame()" class="bg-gray-700 text-white font-bold py-3 px-6 rounded hover:bg-gray-600 transition border border-gray-500">MENU UTAMA</button>
+                    <button onclick="restartLevel()" class="bg-white text-black font-bold py-3 px-8 rounded hover:bg-gray-200 transition shadow-[0_4px_0_rgb(156,163,175)] active:translate-y-1 active:shadow-none">MAIN LAGI</button>
                 </div>
             </div>
         </div>
@@ -340,6 +360,10 @@
         let gameActive = false; // Is playing map?
         let gameOver = false;
         
+        // NEW STATS
+        let totalEnemiesKilled = 0;
+        let gameStartTime = 0;
+
         let enemies = [];
         let towers = [];
         let projectiles = [];
@@ -749,6 +773,10 @@
                     // NEW: Munculkan teks floating gold
                     floatingTexts.push(new FloatingText(e.x, e.y, `+${e.reward}`, '#FACC15')); // Kuning Emas
                     
+                    // START OF CHANGE: Update total enemies killed
+                    totalEnemiesKilled++;
+                    // END OF CHANGE
+
                     enemies.splice(i, 1);
                     updateUI();
                 }
@@ -787,6 +815,17 @@
 
             if (lives <= 0) {
                 gameOver = true;
+                
+                // START OF CHANGE: Calculate and show statistics
+                const elapsed = Date.now() - gameStartTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                
+                document.getElementById('statWave').innerText = wave;
+                document.getElementById('statKilled').innerText = totalEnemiesKilled;
+                document.getElementById('statTime').innerText = `${minutes}m ${seconds}s`;
+                // END OF CHANGE
+
                 document.getElementById('gameOverScreen').classList.remove('hidden');
             }
 
@@ -896,6 +935,11 @@
             waveInProgress = false;
             enemiesToSpawn = 0;
             
+            // START OF CHANGE: Reset statistics
+            totalEnemiesKilled = 0;
+            gameStartTime = Date.now();
+            // END OF CHANGE
+
             // Reset Selection
             selectedTowerType = null;
             selectedTowerInstance = null;
