@@ -34,6 +34,44 @@
 </head>
 <body class="bg-gray-900 text-white h-screen overflow-hidden relative">
 
+    <!-- NAVBAR (NEW) -->
+    <nav id="mainNavbar" class="hidden absolute top-0 w-full bg-gray-800/90 backdrop-blur-md border-b-4 border-gray-700 p-3 flex justify-between items-center z-50 shadow-lg transition-transform duration-300">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-yellow-500 rounded border-2 border-white shadow-inner flex items-center justify-center">
+                    <span class="text-black font-bold text-xs">TD</span>
+                </div>
+                <h1 class="hidden md:block text-yellow-400 pixel-font text-xs tracking-widest">BENTENG</h1>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="showHome()" id="navBtnHome" class="px-4 py-2 rounded font-bold text-sm hover:bg-gray-700 transition text-white bg-gray-700/50">MARKAS</button>
+                <button onclick="showShop()" id="navBtnShop" class="px-4 py-2 rounded font-bold text-sm hover:bg-gray-700 transition text-gray-400">TOKO</button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 md:gap-6">
+            <!-- Coin Display -->
+            <div class="flex items-center gap-2 bg-gray-900 px-3 py-1 rounded-full border border-gray-600">
+                <div class="w-4 h-4 bg-yellow-400 rounded-full border border-yellow-200 shadow-[0_0_5px_yellow]"></div>
+                <span id="navCoinDisplay" class="font-mono text-yellow-400 font-bold">...</span>
+            </div>
+
+            <!-- Profile & Logout -->
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider">KOMANDAN</p>
+                    <p id="navUsername" class="text-white font-bold text-sm leading-none">Player</p>
+                </div>
+                <button onclick="handleLogout()" class="bg-red-600/80 hover:bg-red-500 text-white p-2 rounded-lg border border-red-500 transition" title="Keluar">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <!-- 0. LOGIN SCREEN -->
     <div id="loginScreen" class="absolute inset-0 z-[60] bg-gray-900 flex flex-col items-center justify-center p-4">
         <h1 class="text-3xl md:text-5xl text-yellow-400 pixel-font mb-8 text-center leading-relaxed">
@@ -68,34 +106,18 @@
         </div>
     </div>
 
-    <!-- 1. HOME SCREEN -->
-    <div id="homeScreen" class="hidden absolute inset-0 z-50 bg-gray-900 flex flex-col items-center justify-center space-y-8 p-4">
-        <!-- User Info Header -->
-        <div class="absolute top-4 right-4 flex items-center gap-4">
-            <div class="text-right">
-                <p class="text-xs text-gray-400 uppercase">Komandan</p>
-                <p id="welcomeUser" class="text-yellow-400 font-bold text-lg">Player</p>
-                <!-- NEW: Total Coins Display -->
-                <div class="flex items-center justify-end gap-2 mt-1">
-                    <div class="w-4 h-4 bg-yellow-500 rounded-full border border-yellow-200"></div>
-                    <p id="totalShopCoins" class="text-white font-mono text-sm">0</p>
-                </div>
-            </div>
-            <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold py-2 px-4 rounded border border-red-800">
-                LOGOUT
-            </button>
-        </div>
-
-        <div class="text-center space-y-4">
+    <!-- 1. HOME SCREEN (Updated layout to fit Navbar) -->
+    <div id="homeScreen" class="hidden absolute inset-0 z-40 bg-gray-900 pt-16 flex flex-col items-center justify-center space-y-8 p-4">
+        <div class="text-center space-y-4 animate-fade-in">
             <h1 class="text-4xl md:text-6xl text-yellow-400 pixel-font leading-relaxed tracking-wider drop-shadow-lg">
-                MENARA<br>PERTAHANAN
+                SIAP<br>TEMPUR?
             </h1>
-            <p class="text-gray-400 text-lg md:text-xl tracking-widest uppercase">Lindungi Benteng Terakhir</p>
+            <p class="text-gray-400 text-lg md:text-xl tracking-widest uppercase">Pilih strategi terbaikmu</p>
         </div>
         
-        <button onclick="showMapSelection()" class="group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xl shadow-[0_4px_0_rgb(30,58,138)] active:shadow-[0_0px_0_rgb(30,58,138)] active:translate-y-1 transition-all">
-            <span class="relative z-10 flex items-center gap-3">
-                MULAI PERMAINAN
+        <button onclick="showMapSelection()" class="group relative px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-2xl shadow-[0_6px_0_rgb(30,58,138)] active:shadow-[0_0px_0_rgb(30,58,138)] active:translate-y-1 transition-all">
+            <span class="relative z-10 flex items-center gap-3 pixel-font text-sm md:text-xl">
+                MULAI MISI
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -103,13 +125,62 @@
         </button>
 
         <div class="absolute bottom-8 text-gray-600 text-sm flex flex-col items-center gap-2">
-            <span>Dibuat dengan HTML Canvas & Tailwind</span>
-            <span id="firebaseStatus" class="text-xs text-green-500">Firebase Terhubung</span>
+            <span id="firebaseStatus" class="text-xs text-green-500 font-mono">System Online</span>
         </div>
     </div>
 
-    <!-- 2. MAP SELECTION SCREEN -->
-    <div id="mapSelectScreen" class="hidden absolute inset-0 z-50 bg-gray-900/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+    <!-- 2. SHOP SCREEN (NEW) -->
+    <div id="shopScreen" class="hidden absolute inset-0 z-40 bg-gray-900 pt-20 px-4 pb-4 overflow-y-auto">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl text-white pixel-font mb-2">GUDANG SENJATA</h2>
+                <p class="text-gray-400">Gunakan koinmu untuk memperkuat pasukan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Shop Item 1: Starting Money -->
+                <div class="bg-gray-800 rounded-xl p-6 border-4 border-gray-700 hover:border-yellow-500 transition relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-black font-bold text-xs px-2 py-1 rounded-bl">UPGRADE</div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-2xl shadow-lg">💰</div>
+                        <div>
+                            <h3 class="font-bold text-white text-lg">Modal Awal</h3>
+                            <p class="text-xs text-gray-400">Level: <span id="lvl-startMoney">0</span></p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-300 mb-4 h-10">Menambah uang awal saat memulai game sebesar <span class="text-green-400 font-bold">+50</span>.</p>
+                    
+                    <div class="flex justify-between items-center border-t border-gray-700 pt-4">
+                        <div class="text-yellow-400 font-mono font-bold flex items-center gap-1">
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                            <span id="price-startMoney">500</span>
+                        </div>
+                        <button onclick="buyUpgrade('startMoney', 500)" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold text-sm shadow-[0_2px_0_rgb(30,58,138)] active:shadow-none active:translate-y-0.5 transition">
+                            BELI
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shop Item Placeholder (Coming Soon) -->
+                <div class="bg-gray-800/50 rounded-xl p-6 border-4 border-gray-700/50 relative overflow-hidden opacity-70">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] z-10">
+                        <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded text-xs font-bold border border-gray-500">SEGERA HADIR</span>
+                    </div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-red-600 rounded flex items-center justify-center text-2xl grayscale">🔥</div>
+                        <div>
+                            <h3 class="font-bold text-gray-400 text-lg">Fire Tower</h3>
+                            <p class="text-xs text-gray-500">Tower Baru</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 h-10">Membakar musuh dalam area tertentu.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MAP SELECTION SCREEN -->
+    <div id="mapSelectScreen" class="hidden absolute inset-0 z-50 bg-gray-900/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm pt-20">
         <h2 class="text-3xl font-bold text-white mb-8 pixel-font text-center">PILIH MEDAN PERANG</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl px-4 overflow-y-auto max-h-[80vh] hide-scrollbar pb-20">
@@ -163,7 +234,7 @@
         <button onclick="showHome()" class="mt-8 text-gray-400 hover:text-white underline">Kembali ke Menu Utama</button>
     </div>
 
-    <!-- 3. GAME SCREEN (Hidden by default) -->
+    <!-- 4. GAME SCREEN (Hidden by default) -->
     <div id="gameUI" class="hidden h-screen flex flex-col items-center justify-center w-full relative">
         <!-- UI Header -->
         <div class="w-full max-w-4xl p-4 flex justify-between items-center bg-gray-800 rounded-b-xl shadow-lg border-b-4 border-gray-700 z-10 shrink-0">
@@ -190,7 +261,7 @@
             </div>
             
             <div class="flex gap-2">
-                <!-- Tombol Surrender (NEW) -->
+                <!-- Tombol Surrender -->
                 <button onclick="surrenderGame()" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-3 rounded shadow transition flex items-center gap-1 border border-red-900" title="Menyerah & Ambil Koin">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" />
@@ -245,7 +316,7 @@
                 </div>
             </div>
 
-            <!-- Game Over Screen (UPDATED with Coins) -->
+            <!-- Game Over Screen -->
             <div id="gameOverScreen" class="hidden absolute inset-0 bg-black/85 flex flex-col items-center justify-center z-50 p-4">
                 <h2 id="gameOverTitle" class="text-3xl md:text-5xl font-bold text-red-500 mb-2 pixel-font text-center leading-tight tracking-wider">GAME OVER</h2>
                 <p id="gameOverSubtitle" class="text-xl text-gray-400 mb-8 tracking-widest uppercase">Markas Hancur!</p>
@@ -359,6 +430,9 @@
         const passwordInput = document.getElementById('passwordInput');
         let currentUser = null;
         let shopCoins = 0; // Koin Persisten
+        let userUpgrades = {
+            startMoney: 0
+        };
 
         const getFakeEmail = (username) => `${username.trim().toLowerCase().replace(/\s+/g, '')}@towerdefense.game`;
 
@@ -430,9 +504,7 @@
 
         onAuthStateChanged(auth, async (user) => {
             const loginScreen = document.getElementById('loginScreen');
-            const homeScreen = document.getElementById('homeScreen');
-            const gameUI = document.getElementById('gameUI');
-            const mapSelectScreen = document.getElementById('mapSelectScreen');
+            const navUsername = document.getElementById('navUsername');
 
             if (user) {
                 currentUser = user;
@@ -441,22 +513,29 @@
                 if (!displayName && user.email) {
                     displayName = user.email.split('@')[0];
                 }
-                document.getElementById('welcomeUser').innerText = displayName || "Komandan";
+                navUsername.innerText = displayName || "Komandan";
 
-                // FETCH USER COINS
-                await fetchUserCoins(user.uid);
-
+                // Non-blocking UI Update
                 loginScreen.classList.add('hidden');
+                
+                // Show home by default on login if not in game
                 if (!gameActive) {
                     showHome();
                 }
+
+                // FETCH USER DATA (Coins & Upgrades)
+                await fetchUserStats(user.uid);
+
             } else {
                 currentUser = null;
                 console.log("User logged out");
                 loginScreen.classList.remove('hidden');
-                homeScreen.classList.add('hidden');
-                gameUI.classList.add('hidden');
-                mapSelectScreen.classList.add('hidden');
+                document.getElementById('mainNavbar').classList.add('hidden');
+                document.getElementById('homeScreen').classList.add('hidden');
+                document.getElementById('shopScreen').classList.add('hidden');
+                document.getElementById('gameUI').classList.add('hidden');
+                document.getElementById('mapSelectScreen').classList.add('hidden');
+                
                 usernameInput.value = "";
                 passwordInput.value = "";
                 authMessage.innerText = "";
@@ -465,22 +544,29 @@
 
         // --- FIRESTORE FUNCTIONS ---
         
-        async function fetchUserCoins(userId) {
+        async function fetchUserStats(userId) {
             try {
-                // Strict Path: collection(db, 'artifacts', appId, 'users', userId, collectionName)
                 const docRef = doc(db, 'artifacts', appId, 'users', userId, 'game_data', 'stats');
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    shopCoins = docSnap.data().coins || 0;
+                    const data = docSnap.data();
+                    shopCoins = data.coins || 0;
+                    if (data.upgrades) {
+                        userUpgrades = { ...userUpgrades, ...data.upgrades };
+                    }
                 } else {
                     // Create initial doc if not exists
                     shopCoins = 0;
-                    await setDoc(docRef, { coins: 0 });
+                    await setDoc(docRef, { 
+                        coins: 0,
+                        upgrades: { startMoney: 0 }
+                    });
                 }
                 updateShopUI();
             } catch (e) {
-                console.error("Error fetching coins:", e);
+                console.error("Error fetching stats:", e);
+                document.getElementById('navCoinDisplay').innerText = "Err";
             }
         }
 
@@ -491,19 +577,61 @@
                 await updateDoc(docRef, {
                     coins: increment(amount)
                 });
-                shopCoins += amount; // Optimistic update
+                shopCoins += amount; 
                 updateShopUI();
             } catch (e) {
                 console.error("Error adding coins:", e);
             }
         }
 
+        async function buyUpgrade(type, cost) {
+            if (!currentUser) return;
+            if (shopCoins < cost) {
+                alert("Koin tidak cukup!");
+                return;
+            }
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'game_data', 'stats');
+                
+                // Update local state first (Optimistic UI)
+                shopCoins -= cost;
+                if(type === 'startMoney') userUpgrades.startMoney = (userUpgrades.startMoney || 0) + 1;
+
+                updateShopUI();
+
+                // Firestore Update
+                // Note: using nested field update syntax "upgrades.startMoney"
+                await updateDoc(docRef, {
+                    coins: shopCoins,
+                    [`upgrades.${type}`]: increment(1)
+                });
+
+            } catch (e) {
+                console.error("Error buying upgrade:", e);
+                // Revert on error would be ideal here, but keeping it simple
+            }
+        }
+
         function updateShopUI() {
+            // Navbar Coin
+            const navCoin = document.getElementById('navCoinDisplay');
+            if (navCoin) navCoin.innerText = shopCoins;
+            
+            // Total display (deprecated in Home but kept if needed)
             const el = document.getElementById('totalShopCoins');
             if (el) el.innerText = shopCoins;
+            
+            // Game Over display
             const elEnd = document.getElementById('statTotalCoins');
             if (elEnd) elEnd.innerText = shopCoins;
+
+            // Shop Items
+            document.getElementById('lvl-startMoney').innerText = userUpgrades.startMoney || 0;
         }
+
+        // --- EXPORTED FUNCTIONS FOR HTML ---
+        window.buyUpgrade = buyUpgrade;
 
         // --- GAME LOGIC ---
 
@@ -523,7 +651,6 @@
             
             // Calculate Earned Coins
             // Formula: (Waves * 10) + (Kills * 1)
-            // Bonus for surrender: None special, just what you earned.
             const coinsEarned = (Math.max(0, wave - 1) * 10) + (totalEnemiesKilled * 1);
 
             // Update UI
@@ -556,7 +683,7 @@
         const TILE_SIZE = 40;
         
         const MAP_DATA = [
-            // PETA 1: Zig-Zag (Lembah Zig-Zag)
+            // PETA 1: Zig-Zag
             {
                 name: "Lembah Zig-Zag",
                 grid: [
@@ -584,7 +711,7 @@
                     {x: 17, y: 12}, {x: 19, y: 12}
                 ]
             },
-            // PETA 2: Melingkar (Labirin Melingkar)
+            // PETA 2: Melingkar
             {
                 name: "Labirin Melingkar",
                 grid: [
@@ -598,9 +725,9 @@
                     [1,0,1,0,1,0,1,0,0,0,0,0,0,1,0,1,0,1,0,1],
                     [1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,1,0,1,0,1],
                     [1,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,1],
-                    [1,0,1,0,1,0,1,1,1,0,0,0,0,1,0,1,0,1,0,1],
+                    [1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1],
                     [1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1],
-                    [1,0,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0,1],
+                    [1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],
                     [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
                     [1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
                 ],
@@ -610,25 +737,25 @@
                     {x:6,y:6}, {x:13,y:6}, {x:13,y:8}, {x:8,y:8} // End inside
                 ]
             },
-            // PETA 3: Tantangan (Jalur Ganda - Long)
+            // PETA 3: Tantangan
             {
                 name: "Jalur Ganda",
                 grid: [
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
-                    [1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],
-                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],
-                    [0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],
-                    [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
-                    [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
-                    [0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],
-                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],
-                    [1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] 
+                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1], 
+                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1], 
+                    [1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1], 
+                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0], 
+                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0], 
+                    [0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0], 
+                    [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0], 
+                    [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0], 
+                    [0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0], 
+                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0], 
+                    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0], 
+                    [1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1], 
+                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1], 
+                    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1], 
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]  
                 ],
                 waypoints: [
                     {x:0,y:0}, {x:0,y:2}, {x:9,y:2}, {x:9,y:5}, {x:1,y:5}, {x:1,y:8}, {x:9,y:8}, 
@@ -645,9 +772,9 @@
         // State Global
         let currentMapGrid = [];
         let currentWaypoints = [];
-        let activeScreen = 'login'; // login, home, mapSelect, game
+        let activeScreen = 'login'; // login, home, mapSelect, game, shop
 
-        let money = 200; // Uang di dalam game (bukan koin)
+        let money = 200; // Uang di dalam game
         let lives = 20;
         let wave = 1;
         let gameActive = false; // Is playing map?
@@ -1140,6 +1267,11 @@
                     if (currentMapGrid[r][c] === 1) {
                         ctx.fillStyle = '#D1D5DB';
                         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                        
+                        // NEW: Path Border for clarity
+                        ctx.strokeStyle = '#9CA3AF'; // Light Gray border
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
                     } else {
                         ctx.fillStyle = ((c+r)%2 === 0) ? '#10B981' : '#059669';
                         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
@@ -1192,7 +1324,73 @@
             // Draw Floating Texts di atas segalanya
             floatingTexts.forEach(ft => ft.draw());
 
+            // NEW: Draw Map Features (Start/End & Spawn Indicator)
+            drawMapFeatures();
+
             requestAnimationFrame(gameLoop);
+        }
+
+        // --- NEW: DRAW MAP FEATURES ---
+        function drawMapFeatures() {
+            if (currentWaypoints.length < 2) return;
+
+            const startWp = currentWaypoints[0];
+            const endWp = currentWaypoints[currentWaypoints.length - 1];
+
+            // 1. Draw Start Point (Door)
+            ctx.save();
+            ctx.translate(startWp.x, startWp.y);
+            ctx.fillStyle = '#3B82F6'; // Blue Portal
+            ctx.fillRect(-15, -15, 30, 30);
+            ctx.fillStyle = '#1D4ED8'; // Darker Blue
+            ctx.fillRect(-10, -10, 20, 20); // Inner
+            ctx.fillStyle = 'white';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText("IN", 0, 4);
+            ctx.restore();
+
+            // 2. Draw End Point (Base)
+            ctx.save();
+            ctx.translate(endWp.x, endWp.y);
+            ctx.fillStyle = '#EF4444'; // Red Base
+            ctx.beginPath();
+            ctx.moveTo(0, -15);
+            ctx.lineTo(15, 0);
+            ctx.lineTo(0, 15);
+            ctx.lineTo(-15, 0);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText("HQ", 0, 4);
+            ctx.restore();
+
+            // 3. Draw Spawn Indicator if wave not in progress
+            if (!waveInProgress && enemies.length === 0) {
+                const time = Date.now() / 300;
+                const offset = Math.sin(time) * 10;
+                
+                ctx.save();
+                ctx.translate(startWp.x, startWp.y - 40 + offset);
+                
+                // Draw Arrow
+                ctx.fillStyle = '#FBBF24'; // Yellow
+                ctx.beginPath();
+                ctx.moveTo(-10, -10);
+                ctx.lineTo(10, -10);
+                ctx.lineTo(0, 10);
+                ctx.fill();
+
+                // Draw Text
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = 'black';
+                ctx.shadowBlur = 4;
+                ctx.fillText("MUSUH DARI SINI", 0, -15);
+                ctx.restore();
+            }
         }
 
         // --- SISTEM MENU & NAVIGASI ---
@@ -1200,14 +1398,27 @@
         function showHome() {
             activeScreen = 'home';
             gameActive = false;
+            document.getElementById('mainNavbar').classList.remove('hidden');
             document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('shopScreen').classList.add('hidden');
             document.getElementById('mapSelectScreen').classList.add('hidden');
             document.getElementById('gameUI').classList.add('hidden');
             document.getElementById('loginScreen').classList.add('hidden');
         }
 
+        function showShop() {
+            activeScreen = 'shop';
+            gameActive = false;
+            document.getElementById('mainNavbar').classList.remove('hidden');
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('shopScreen').classList.remove('hidden');
+            document.getElementById('mapSelectScreen').classList.add('hidden');
+            document.getElementById('gameUI').classList.add('hidden');
+        }
+
         function showMapSelection() {
             activeScreen = 'mapSelect';
+            document.getElementById('mainNavbar').classList.remove('hidden');
             document.getElementById('homeScreen').classList.add('hidden');
             document.getElementById('mapSelectScreen').classList.remove('hidden');
         }
@@ -1224,7 +1435,9 @@
                 y: p.y * TILE_SIZE + TILE_SIZE/2
             }));
 
-            money = 200;
+            // Apply Upgrades
+            money = 200 + (userUpgrades.startMoney * 50);
+            
             lives = 20;
             wave = 1;
             enemies = [];
@@ -1249,6 +1462,7 @@
 
             activeScreen = 'game';
             gameActive = true;
+            document.getElementById('mainNavbar').classList.add('hidden'); // Hide navbar in game
             document.getElementById('mapSelectScreen').classList.add('hidden');
             document.getElementById('gameUI').classList.remove('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
@@ -1432,6 +1646,7 @@
 
         // --- EXPORT TO WINDOW (REQUIRED FOR MODULE SCRIPTS) ---
         window.showMapSelection = showMapSelection;
+        window.showShop = showShop;
         window.loadMap = loadMap;
         window.showHome = showHome;
         window.quitGame = quitGame;
