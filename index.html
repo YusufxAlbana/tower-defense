@@ -50,6 +50,13 @@
             scrollbar-width: none;
         }
 
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(234, 179, 8, 0.5); border-color: rgba(234, 179, 8, 0.6); }
+            50% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.8); border-color: rgba(234, 179, 8, 1); }
+        }
+        .animate-glow { animation: pulse-glow 2s infinite; }
+
         .scanline {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05));
@@ -60,7 +67,9 @@
         .tower-btn:active { transform: scale(0.95); }
         
         .glass-panel {
-            background: rgba(31, 41, 55, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(31, 41, 55, 0.95); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .screen { transition: opacity 0.3s ease-in-out; }
@@ -69,9 +78,6 @@
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
         
         #loginScreen { overflow-y: auto; }
-
-        @keyframes fillBar { from { width: 0; } to { width: 100%; } }
-        .stat-fill { animation: fillBar 1s ease-out forwards; }
     </style>
 </head>
 <body class="bg-gray-950 text-white h-screen overflow-hidden relative selection:bg-yellow-500 selection:text-black">
@@ -95,7 +101,6 @@
                 <button onclick="window.gameSystem.ui.showScreen('home')" id="navBtnHome" class="relative px-4 py-1.5 rounded-md font-bold text-xs md:text-sm hover:bg-gray-700 transition text-white border-b-2 border-transparent hover:border-yellow-500"><i class="fa-solid fa-house mr-2"></i>BASE</button>
                 <button onclick="window.gameSystem.ui.showScreen('deck')" id="navBtnDeck" class="relative px-4 py-1.5 rounded-md font-bold text-xs md:text-sm hover:bg-gray-700 transition text-gray-400 border-b-2 border-transparent hover:border-green-500"><i class="fa-solid fa-layer-group mr-2"></i>DECK</button>
                 <button onclick="window.gameSystem.ui.showScreen('shop')" id="navBtnShop" class="relative px-4 py-1.5 rounded-md font-bold text-xs md:text-sm hover:bg-gray-700 transition text-gray-400 border-b-2 border-transparent hover:border-blue-500"><i class="fa-solid fa-cart-shopping mr-2"></i>SHOP</button>
-                <button onclick="window.gameSystem.ui.showScreen('intel')" class="relative px-4 py-1.5 rounded-md font-bold text-xs md:text-sm hover:bg-gray-700 transition text-gray-400 border-b-2 border-transparent hover:border-red-500"><i class="fa-solid fa-book-skull mr-2"></i>INTEL</button>
             </div>
         </div>
 
@@ -164,7 +169,7 @@
                 MAIN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">BASE</span>
             </h1>
             <p class="text-gray-400 text-lg md:text-xl tracking-[0.2em] uppercase font-light border-t border-b border-gray-800 py-4">
-                "Know your enemy, know yourself"
+                "Defense is the best offense"
             </p>
         </div>
         
@@ -175,45 +180,154 @@
                     <i class="fa-solid fa-play"></i>
                 </span>
             </button>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="window.gameSystem.ui.showScreen('deck')" class="px-6 py-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-sm shadow-lg active:scale-95 transition-all flex flex-col items-center justify-center gap-2 border border-gray-700 hover:border-green-500 group">
+                    <i class="fa-solid fa-layer-group text-2xl text-green-400 group-hover:scale-110 transition-transform"></i>
+                    MANAGE DECK
+                </button>
+                <button onclick="window.gameSystem.ui.showScreen('shop')" class="px-6 py-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-sm shadow-lg active:scale-95 transition-all flex flex-col items-center justify-center gap-2 border border-gray-700 hover:border-blue-500 group">
+                    <i class="fa-solid fa-cart-shopping text-2xl text-blue-400 group-hover:scale-110 transition-transform"></i>
+                    ARMORY
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- 2. SHOP SCREEN -->
     <div id="shopScreen" class="screen hidden absolute inset-0 z-40 bg-gray-900 pt-24 px-4 pb-4 overflow-y-auto scroll-smooth">
         <div class="max-w-7xl mx-auto pb-20">
-            <div class="text-center mb-12"><h2 class="text-3xl md:text-5xl text-white pixel-font mb-4 tracking-wide text-shadow">ARMORY</h2></div>
-            <div class="mb-16 animate-fade-in-up"><h3 class="text-yellow-400 font-bold mb-6 border-b border-gray-700 pb-2 flex items-center gap-3 text-xl tracking-widest">BASE UPGRADES</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-yellow-500 transition-all duration-300 relative group hover:shadow-[0_0_20px_rgba(234,179,8,0.2)]"><div class="absolute top-4 right-4"><span class="bg-gray-900 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded border border-yellow-500/30">PASSIVE</span></div><div class="flex items-start gap-5 mb-6"><div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center text-4xl shadow-lg text-white"><i class="fa-solid fa-money-bill-wave"></i></div><div><h3 class="font-bold text-white text-xl font-mono">STARTING FUNDS</h3><p class="text-xs text-green-400 font-mono mt-1 bg-green-900/30 inline-block px-2 py-0.5 rounded">Level: <span id="lvl-startMoney" class="text-white">0</span></p></div></div><p class="text-sm text-gray-400 mb-6 leading-relaxed min-h-[40px]">Increases mission starting cash by <span class="text-white font-bold">+50</span>.</p><div class="flex justify-between items-center border-t border-gray-700 pt-4 mt-auto"><div class="text-yellow-400 font-mono font-bold text-lg flex items-center gap-2"><span>🟡</span><span id="price-startMoney">2000</span></div><button onclick="window.gameSystem.shop.buyUpgrade('startMoney', 2000)" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-lg active:scale-95 transition-all">BUY</button></div></div></div></div>
-            <div class="animate-fade-in-up" style="animation-delay: 0.1s;"><h3 class="text-blue-400 font-bold mb-6 border-b border-gray-700 pb-2 flex items-center gap-3 text-xl tracking-widest">TURRET LICENSES</h3><div id="shopTurretContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div></div>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl text-white pixel-font mb-4 tracking-wide text-shadow">ARMORY</h2>
+                <div class="h-1 w-24 bg-blue-500 mx-auto rounded-full mb-4"></div>
+                <p class="text-gray-400 max-w-md mx-auto">Acquire latest technology to defend your base against the swarm.</p>
+            </div>
+            <!-- UPGRADES -->
+            <div class="mb-16 animate-fade-in-up">
+                <h3 class="text-yellow-400 font-bold mb-6 border-b border-gray-700 pb-2 flex items-center gap-3 text-xl tracking-widest">BASE UPGRADES</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-yellow-500 transition-all duration-300 relative group hover:shadow-[0_0_20px_rgba(234,179,8,0.2)]">
+                        <div class="absolute top-4 right-4"><span class="bg-gray-900 text-yellow-500 text-[10px] font-bold px-2 py-1 rounded border border-yellow-500/30">PASSIVE</span></div>
+                        <div class="flex items-start gap-5 mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center text-4xl shadow-lg text-white"><i class="fa-solid fa-money-bill-wave"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-xl font-mono">STARTING FUNDS</h3>
+                                <p class="text-xs text-green-400 font-mono mt-1 bg-green-900/30 inline-block px-2 py-0.5 rounded">Level: <span id="lvl-startMoney" class="text-white">0</span></p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-6 leading-relaxed min-h-[40px]">Increases mission starting cash by <span class="text-white font-bold">+50</span>.</p>
+                        <div class="flex justify-between items-center border-t border-gray-700 pt-4 mt-auto">
+                            <div class="text-yellow-400 font-mono font-bold text-lg flex items-center gap-2"><span>🟡</span><span id="price-startMoney">2000</span></div>
+                            <button onclick="window.gameSystem.shop.buyUpgrade('startMoney', 2000)" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-lg active:scale-95 transition-all">BUY</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- TURRETS -->
+            <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
+                <h3 class="text-blue-400 font-bold mb-6 border-b border-gray-700 pb-2 flex items-center gap-3 text-xl tracking-widest">TURRET LICENSES</h3>
+                <div id="shopTurretContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            </div>
         </div>
     </div>
 
     <!-- 3. DECK SCREEN -->
     <div id="deckScreen" class="screen hidden absolute inset-0 z-40 bg-gray-900 pt-24 px-4 pb-4 overflow-y-auto flex flex-col items-center">
-        <div class="w-full max-w-6xl animate-fade-in"><div class="text-center mb-10"><h2 class="text-3xl md:text-5xl text-white pixel-font mb-3 text-shadow">LOGISTICS</h2><p class="text-gray-400 text-sm font-mono bg-gray-800 inline-block px-4 py-1 rounded-full border border-gray-700">Deployment Capacity: Max 5 Units</p></div><div class="bg-gray-800/80 p-8 rounded-3xl border border-gray-700 mb-10 shadow-2xl backdrop-blur-sm"><div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-700/50"><h3 class="text-green-400 font-bold tracking-[0.2em] text-lg flex items-center gap-3"><span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>ACTIVE DECK (<span id="deckCount" class="text-white">0</span>/5)</h3><span class="text-xs text-gray-400 italic bg-black/30 px-3 py-1 rounded-lg border border-gray-700">Click to remove</span></div><div id="activeDeckContainer" class="flex flex-wrap justify-center gap-6 min-h-[140px] items-center bg-black/20 rounded-2xl p-6 border-2 border-dashed border-gray-700/50"><span class="text-gray-500 italic font-mono">Deck is empty. Select units below.</span></div></div><div class="bg-gray-800/80 p-8 rounded-3xl border border-gray-700 shadow-2xl backdrop-blur-sm"><div class="flex justify-between items-center mb-6"><h3 class="text-blue-400 font-bold tracking-[0.2em] text-lg">STORAGE</h3><div class="text-xs text-blue-300/70 font-mono">Available Inventory</div></div><div id="collectionContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div></div></div>
+        <div class="w-full max-w-6xl animate-fade-in">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-5xl text-white pixel-font mb-3 text-shadow">LOGISTICS</h2>
+                <p class="text-gray-400 text-sm font-mono bg-gray-800 inline-block px-4 py-1 rounded-full border border-gray-700">Deployment Capacity: Max 5 Units. Min 1.</p>
+            </div>
+            <!-- Active Deck -->
+            <div class="bg-gray-800/80 p-8 rounded-3xl border border-gray-700 mb-10 shadow-2xl backdrop-blur-sm">
+                <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-700/50">
+                    <h3 class="text-green-400 font-bold tracking-[0.2em] text-lg flex items-center gap-3"><span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>ACTIVE DECK (<span id="deckCount" class="text-white">0</span>/5)</h3>
+                    <span class="text-xs text-gray-400 italic bg-black/30 px-3 py-1 rounded-lg border border-gray-700">Click to remove</span>
+                </div>
+                <div id="activeDeckContainer" class="flex flex-wrap justify-center gap-6 min-h-[140px] items-center bg-black/20 rounded-2xl p-6 border-2 border-dashed border-gray-700/50">
+                    <span class="text-gray-500 italic font-mono">Deck is empty. Select units below.</span>
+                </div>
+            </div>
+            <!-- Collection -->
+            <div class="bg-gray-800/80 p-8 rounded-3xl border border-gray-700 shadow-2xl backdrop-blur-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-blue-400 font-bold tracking-[0.2em] text-lg">STORAGE</h3>
+                    <div class="text-xs text-blue-300/70 font-mono">Available Inventory</div>
+                </div>
+                <div id="collectionContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+            </div>
+        </div>
     </div>
 
     <!-- 4. MAP SELECTION -->
     <div id="mapSelectScreen" class="screen hidden absolute inset-0 z-50 bg-gray-900/95 flex flex-col items-center justify-center p-4 backdrop-blur-lg pt-20 overflow-y-auto">
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-12 pixel-font text-center drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">CONFLICT ZONES</h2>
         <div id="mapListContainer" class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl px-4 pb-20"></div>
-        <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2"><button onclick="window.gameSystem.ui.showScreen('home')" class="text-gray-400 hover:text-white hover:scale-105 transition-all text-sm flex items-center gap-2 bg-gray-800/90 px-6 py-3 rounded-full border border-gray-700 hover:border-white shadow-lg backdrop-blur">ABORT MISSION</button></div>
+        <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2">
+            <button onclick="window.gameSystem.ui.showScreen('home')" class="text-gray-400 hover:text-white hover:scale-105 transition-all text-sm flex items-center gap-2 bg-gray-800/90 px-6 py-3 rounded-full border border-gray-700 hover:border-white shadow-lg backdrop-blur">ABORT MISSION</button>
+        </div>
     </div>
 
     <!-- 5. GAME SCREEN -->
     <div id="gameUI" class="screen hidden h-screen flex flex-col items-center justify-center w-full relative bg-black">
+        <!-- UI Header -->
         <div class="w-full max-w-6xl p-3 flex justify-between items-center bg-gray-900/90 rounded-b-2xl shadow-2xl border-b border-gray-700 z-10 shrink-0 backdrop-blur mx-4 mt-0 relative">
-            <button onclick="window.gameSystem.game.quit()" class="mr-4 text-gray-400 hover:text-red-400 p-2 rounded-lg hover:bg-gray-800 transition border border-transparent hover:border-gray-700"><i class="fa-solid fa-right-from-bracket text-xl"></i></button>
-            <div class="flex gap-6 md:gap-12 flex-grow justify-center"><div class="flex flex-col items-center"><span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">INTEGRITY</span><div class="flex items-center gap-2"><i class="fa-solid fa-heart text-red-500"></i><span id="livesDisplay" class="text-2xl font-mono font-bold text-white drop-shadow-md">20</span></div></div><div class="flex flex-col items-center px-8 border-x border-gray-800"><span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">FUNDS</span><div class="flex items-center gap-2"><span class="text-yellow-400 text-xl">$</span><span id="moneyDisplay" class="text-2xl font-mono font-bold text-yellow-400 drop-shadow-md">200</span></div></div><div class="flex flex-col items-center"><span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">WAVE</span><span id="waveDisplay" class="text-2xl font-mono font-bold text-blue-400 drop-shadow-md">1</span></div></div>
-            <div class="flex gap-3"><button onclick="window.gameSystem.game.surrender()" class="bg-red-900/50 hover:bg-red-600 text-red-300 hover:text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2 border border-red-800 hover:border-red-500 group"><i class="fa-solid fa-flag"></i></button><button id="startWaveBtn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg text-sm shadow-[0_0_15px_rgba(22,163,74,0.6)] active:scale-95 transition-all border border-green-400 flex items-center gap-2 animate-pulse"><span class="w-2 h-2 bg-white rounded-full animate-ping"></span>START</button></div>
+            <div class="w-10"></div>
+            <div class="flex gap-6 md:gap-12 flex-grow justify-center">
+                <div class="flex flex-col items-center"><span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">INTEGRITY</span><div class="flex items-center gap-2"><i class="fa-solid fa-heart text-red-500"></i><span id="livesDisplay" class="text-2xl font-mono font-bold text-white drop-shadow-md">20</span></div></div>
+                <div class="flex flex-col items-center px-8 border-x border-gray-800"><span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">FUNDS</span><div class="flex items-center gap-2"><span class="text-yellow-400 text-xl">$</span><span id="moneyDisplay" class="text-2xl font-mono font-bold text-yellow-400 drop-shadow-md">200</span></div></div>
+                <div class="flex flex-col items-center"><span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">WAVE</span><span id="waveDisplay" class="text-2xl font-mono font-bold text-blue-400 drop-shadow-md">1</span></div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="window.gameSystem.game.surrender()" class="bg-red-900/50 hover:bg-red-600 text-red-300 hover:text-white font-bold py-2 px-4 rounded-lg transition flex items-center gap-2 border border-red-800 hover:border-red-500 group" title="Surrender & Claim Rewards">
+                    <i class="fa-solid fa-flag"></i>
+                </button>
+                <button id="startWaveBtn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg text-sm shadow-[0_0_15px_rgba(22,163,74,0.6)] active:scale-95 transition-all border border-green-400 flex items-center gap-2 animate-pulse"><span class="w-2 h-2 bg-white rounded-full animate-ping"></span>START</button>
+            </div>
         </div>
-        <div class="relative mt-4 shadow-2xl rounded-xl overflow-hidden border-4 border-gray-800 bg-black shrink-0 relative ring-1 ring-gray-700"><canvas id="gameCanvas" width="800" height="600" class="max-w-full h-auto max-h-[65vh] md:max-h-[70vh] block"></canvas>
+
+        <div class="relative mt-4 shadow-2xl rounded-xl overflow-hidden border-4 border-gray-800 bg-black shrink-0 relative ring-1 ring-gray-700">
+            <canvas id="gameCanvas" width="800" height="600" class="max-w-full h-auto max-h-[65vh] md:max-h-[70vh] block"></canvas>
+            
+            <!-- Upgrade Menu -->
             <div id="upgradeMenu" class="hidden absolute bottom-4 right-4 bg-gray-900/95 border border-yellow-500/50 rounded-xl p-5 w-72 shadow-2xl backdrop-blur-md z-20 animate-fade-in">
                 <div class="flex justify-between items-start mb-4 border-b border-gray-700 pb-2"><div><h3 id="upgName" class="font-bold text-yellow-400 text-lg tracking-wide font-mono">TOWER</h3><p class="text-xs text-gray-400 font-mono">LVL <span id="upgLevel" class="text-white font-bold">1</span></p></div><button onclick="window.gameSystem.ui.closeUpgradeMenu()" class="text-gray-500 hover:text-white bg-gray-800 hover:bg-red-900 rounded-lg w-8 h-8 flex items-center justify-center transition">&times;</button></div>
                 <div class="space-y-3 text-sm text-gray-300 mb-6 font-mono"><div class="flex justify-between items-center bg-black/40 px-3 py-1.5 rounded"><span>DMG</span><span id="upgDamage" class="text-white font-bold">20</span></div><div class="flex justify-between items-center bg-black/40 px-3 py-1.5 rounded"><span>RNG</span><span id="upgRange" class="text-white font-bold">120</span></div><div class="flex justify-between items-center bg-black/40 px-3 py-1.5 rounded"><span>SPD</span><span id="upgSpeed" class="text-white font-bold">40</span></div></div>
                 <div class="grid grid-cols-2 gap-3"><button id="btnUpgradeAction" onclick="window.gameSystem.game.upgradeSelected()" class="bg-green-700 hover:bg-green-600 text-white py-3 rounded-lg text-xs font-bold shadow-lg transition-all flex flex-col items-center justify-center border border-green-500/50 group"><span class="mb-1 group-hover:scale-110 transition-transform">UPGRADE</span><span id="upgCost" class="text-[10px] text-green-200 bg-black/30 px-2 rounded-full">$ 100</span></button><button onclick="window.gameSystem.game.sellSelected()" class="bg-red-900 hover:bg-red-800 text-white py-3 rounded-lg text-xs font-bold shadow-lg transition-all flex flex-col items-center justify-center border border-red-500/50 group"><span class="mb-1 group-hover:scale-110 transition-transform">SELL</span><span id="sellValue" class="text-[10px] text-red-200 bg-black/30 px-2 rounded-full">$ 50</span></button></div>
             </div>
-            <div id="gameOverScreen" class="hidden absolute inset-0 bg-gray-950/90 backdrop-blur-sm flex flex-col items-center justify-center z-50 p-4"><div class="transform scale-100 transition-all duration-500 animate-fade-in"><h2 id="gameOverTitle" class="text-5xl md:text-7xl font-bold text-red-600 mb-2 pixel-font text-center leading-tight tracking-wider drop-shadow-[0_5px_5px_rgba(0,0,0,1)]">GAME OVER</h2><p id="gameOverSubtitle" class="text-xl text-gray-400 mb-10 tracking-[0.5em] uppercase text-center font-mono">Mission Failed</p><div class="bg-gray-900 p-8 rounded-2xl border-2 border-gray-700 mb-10 w-full max-w-md shadow-2xl relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div><h3 class="text-white font-bold mb-6 text-center border-b border-gray-800 pb-4 tracking-wide text-lg tech-font">MISSION REPORT</h3><div class="space-y-4 font-mono"><div class="flex justify-between items-center"><span class="text-gray-500 text-sm font-bold uppercase">Wave Reached</span><span class="text-white font-bold text-2xl" id="statWave">1</span></div><div class="flex justify-between items-center"><span class="text-gray-500 text-sm font-bold uppercase">Hostiles Eliminated</span><span class="text-green-400 font-bold text-2xl" id="statKilled">0</span></div><div class="flex justify-between items-center bg-yellow-900/20 p-4 rounded-xl border border-yellow-700/30 mt-4"><span class="text-yellow-500 font-bold text-sm uppercase tracking-wide">COINS EARNED</span><div class="flex items-center gap-3"><div class="w-4 h-4 bg-yellow-500 rounded-full shadow-[0_0_10px_yellow]"></div><span class="text-yellow-400 font-bold text-2xl" id="statCoinsEarned">+0</span></div></div><div class="text-center pt-4 mt-4 border-t border-gray-800"><span class="text-gray-600 text-xs uppercase tracking-widest">Total Treasury</span><div class="text-white font-bold text-lg mt-1" id="statTotalCoins">...</div></div></div></div><div class="flex gap-4 justify-center"><button onclick="window.gameSystem.game.quit()" class="bg-gray-800 text-gray-300 font-bold py-4 px-8 rounded-xl hover:bg-gray-700 transition border border-gray-600 hover:text-white hover:border-white">RETURN</button><button onclick="window.gameSystem.game.restart()" class="bg-white text-black font-bold py-4 px-10 rounded-xl hover:bg-gray-200 transition shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 transform">RETRY MISSION</button></div></div></div>
+
+            <!-- Game Over Screen (FIXED LAYOUT) -->
+            <div id="gameOverScreen" class="hidden absolute inset-0 bg-gray-950/95 backdrop-blur-lg flex flex-col items-center justify-center z-50 p-4 overflow-y-auto">
+                <div class="transform scale-100 transition-all duration-500 animate-fade-in w-full max-w-lg flex flex-col items-center my-auto">
+                    <h2 id="gameOverTitle" class="text-4xl md:text-6xl font-bold text-red-600 mb-2 pixel-font text-center leading-tight tracking-wider drop-shadow-[0_5px_5px_rgba(0,0,0,1)]">GAME OVER</h2>
+                    <p id="gameOverSubtitle" class="text-lg md:text-xl text-gray-400 mb-8 tracking-[0.3em] uppercase text-center font-mono">Mission Failed</p>
+                    
+                    <!-- Stats Box -->
+                    <div class="bg-gray-900 p-6 rounded-2xl border-2 border-gray-700 mb-8 w-full shadow-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                        <h3 class="text-white font-bold mb-6 text-center border-b border-gray-800 pb-4 tracking-wide text-lg tech-font">MISSION REPORT</h3>
+                        <div class="space-y-4 font-mono">
+                            <div class="flex justify-between items-center"><span class="text-gray-500 text-sm font-bold uppercase">Wave Reached</span><span class="text-white font-bold text-2xl" id="statWave">1</span></div>
+                            <div class="flex justify-between items-center"><span class="text-gray-500 text-sm font-bold uppercase">Hostiles Eliminated</span><span class="text-green-400 font-bold text-2xl" id="statKilled">0</span></div>
+                            <div class="flex justify-between items-center bg-yellow-900/20 p-4 rounded-xl border border-yellow-700/30 mt-4">
+                                <span class="text-yellow-500 font-bold text-sm uppercase tracking-wide">COINS EARNED</span>
+                                <div class="flex items-center gap-3"><div class="w-4 h-4 bg-yellow-500 rounded-full shadow-[0_0_10px_yellow]"></div><span class="text-yellow-400 font-bold text-2xl" id="statCoinsEarned">+0</span></div>
+                            </div>
+                            <div class="text-center pt-4 mt-4 border-t border-gray-800"><span class="text-gray-600 text-xs uppercase tracking-widest">Total Treasury</span><div class="text-white font-bold text-lg mt-1" id="statTotalCoins">...</div></div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 justify-center w-full">
+                        <button onclick="window.gameSystem.game.quit()" class="flex-1 bg-gray-800 text-gray-300 font-bold py-4 px-6 rounded-xl hover:bg-gray-700 transition border border-gray-600 hover:text-white hover:border-white flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-house"></i> HOME
+                        </button>
+                        <button onclick="window.gameSystem.game.restart()" class="flex-1 bg-white text-black font-bold py-4 px-6 rounded-xl hover:bg-gray-200 transition shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 transform flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> REPLAY
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <div id="gameTowerSelection" class="w-full max-w-5xl mt-4 p-4 bg-gray-800/90 backdrop-blur rounded-t-3xl border-t-2 border-gray-700 flex justify-center gap-4 overflow-x-auto shrink-0 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] min-h-[100px] items-center"></div>
     </div>
 
@@ -242,8 +356,8 @@
                 <div class="grid grid-cols-2 gap-3 text-sm font-mono">
                     <div class="bg-gray-900/50 p-2 rounded border border-gray-700"><span class="text-gray-500 block text-xs">HEALTH</span><span id="intelHP" class="text-green-400 font-bold text-lg">100</span></div>
                     <div class="bg-gray-900/50 p-2 rounded border border-gray-700"><span class="text-gray-500 block text-xs">SPEED</span><span id="intelSpeed" class="text-blue-400 font-bold text-lg">Normal</span></div>
-                    <div class="bg-gray-900/50 p-2 rounded border border-gray-700"><span class="text-gray-500 block text-xs">BOUNTY</span><span id="intelGold" class="text-yellow-400 font-bold text-lg">10</span></div>
-                    <div class="bg-gray-900/50 p-2 rounded border border-gray-700"><span class="text-gray-500 block text-xs">THREAT</span><span id="intelThreat" class="text-red-400 font-bold text-lg">Low</span></div>
+                    <div class="bg-gray-900/50 p-2 rounded border border-gray-700"><span class="text-gray-500 block text-xs">IN-GAME BOUNTY</span><span id="intelGold" class="text-yellow-400 font-bold text-lg">10</span></div>
+                    <div class="bg-gray-900/50 p-2 rounded border border-gray-700"><span class="text-gray-500 block text-xs">SHOP COIN</span><span class="text-yellow-400 font-bold text-lg">1</span></div>
                 </div>
             </div>
         </div>
@@ -275,7 +389,7 @@
         const firebaseConfig = { apiKey: "AIzaSyBrSTR6OyNvwzLGPpm3dA3rW-pz6PZSlqU", authDomain: "tower-defense-785bd.firebaseapp.com", projectId: "tower-defense-785bd", storageBucket: "tower-defense-785bd.firebasestorage.app", messagingSenderId: "129718667702", appId: "1:129718667702:web:7cf07310a659679fad5917", measurementId: "G-RJK7LVSVEW" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const appId = typeof __app_id !== 'undefined' ? __app_id : 'tower-defense-v1';
 
-        // --- CLASSES (Moved to top to prevent ReferenceError) ---
+        // --- CLASSES (Entities) ---
         class Particle {
             constructor(x, y, color) { this.x=x; this.y=y; this.color=color; this.size=Math.random()*3+1; this.speedX=Math.random()*4-2; this.speedY=Math.random()*4-2; this.life=20; }
             update() { this.x+=this.speedX; this.y+=this.speedY; this.life--; }
@@ -300,41 +414,17 @@
             }
         }
         class Projectile {
-            constructor(x, y, target, damage, towerType, isSpecial) { this.x=x; this.y=y; this.target=target; this.damage=damage; this.towerType=towerType; this.isSpecial=isSpecial; this.active=true; this.speed=['sniper','tesla','laser'].includes(towerType)?30:8; this.targetX=target.x; this.targetY=target.y; if(towerType==='laser')this.life=5; }
-            update(enemies, particles) {
-                if(this.towerType==='laser'){this.life--; if(this.life<=0)this.active=false; return;}
-                if(this.target && enemies.includes(this.target)){this.targetX=this.target.x;this.targetY=this.target.y;}
-                let dx=this.targetX-this.x, dy=this.targetY-this.y; let dist=Math.sqrt(dx*dx+dy*dy);
-                if(dist<this.speed){this.hit(enemies, particles);}else{this.x+=(dx/dist)*this.speed;this.y+=(dy/dist)*this.speed;}
-            }
-            hit(enemies, particles) {
-                const color=TOWER_TYPES[this.towerType].color;
-                if(this.isSpecial){ enemies.forEach(e=>{if(Math.hypot(e.x-this.x,e.y-this.y)<(this.towerType==='ice'?60:80)){e.hp-=this.damage;if(this.towerType==='ice')e.slowTimer=90;}}); for(let i=0;i<5;i++)particles.push(new Particle(this.x,this.y,color)); }
-                else { if(this.target && enemies.includes(this.target)){this.target.hp-=this.damage;if(this.towerType==='ice')this.target.slowTimer=60;} for(let i=0;i<3;i++)particles.push(new Particle(this.x,this.y,'#FFF')); }
-                this.active=false;
-            }
-            draw(ctx) {
-                if(this.towerType==='laser'&&this.target){ctx.beginPath();ctx.moveTo(this.x,this.y);ctx.lineTo(this.target.x,this.target.y);ctx.strokeStyle='#EF4444';ctx.lineWidth=3;ctx.stroke();return;}
-                ctx.beginPath(); ctx.fillStyle=TOWER_TYPES[this.towerType].color; ctx.arc(this.x,this.y,4,0,Math.PI*2); ctx.fill();
-            }
+            constructor(x,y,target,damage,type,special){this.x=x;this.y=y;this.target=target;this.damage=damage;this.type=type;this.special=special;this.active=true;this.speed=['sniper','tesla','laser'].includes(type)?30:8;this.tx=target.x;this.ty=target.y;if(type==='laser')this.life=5;}
+            update(enemies,parts){if(this.type==='laser'){this.life--;if(this.life<=0)this.active=false;return;}if(this.target&&enemies.includes(this.target)){this.tx=this.target.x;this.ty=this.target.y;}let dx=this.tx-this.x,dy=this.ty-this.y;let dist=Math.sqrt(dx*dx+dy*dy);if(dist<this.speed){this.hit(enemies,parts);}else{this.x+=(dx/dist)*this.speed;this.y+=(dy/dist)*this.speed;}}
+            hit(enemies,parts){const c=TOWER_TYPES[this.type].color;if(this.special){enemies.forEach(e=>{if(Math.hypot(e.x-this.x,e.y-this.y)<(this.type==='ice'?60:80)){e.hp-=this.damage;if(this.type==='ice')e.slowTimer=90;}});for(let i=0;i<5;i++)parts.push(new Particle(this.x,this.y,c));}else{if(this.target&&enemies.includes(this.target)){this.target.hp-=this.damage;if(this.type==='ice')this.target.slowTimer=60;}for(let i=0;i<3;i++)parts.push(new Particle(this.x,this.y,'#FFF'));}this.active=false;}
+            draw(ctx){if(this.type==='laser'&&this.target){ctx.beginPath();ctx.moveTo(this.x,this.y);ctx.lineTo(this.target.x,this.target.y);ctx.strokeStyle='#EF4444';ctx.lineWidth=3;ctx.stroke();return;}ctx.beginPath();ctx.fillStyle=TOWER_TYPES[this.type].color;ctx.arc(this.x,this.y,4,0,Math.PI*2);ctx.fill();}
         }
         class Tower {
-            constructor(c, r, typeKey) { this.c=c; this.r=r; this.x=c*TILE_SIZE+TILE_SIZE/2; this.y=r*TILE_SIZE+TILE_SIZE/2; this.type=typeKey; this.stats=JSON.parse(JSON.stringify(TOWER_TYPES[typeKey])); this.cooldownTimer=0; this.angle=0; this.recoil=0; this.level=1; this.upgradeCost=Math.floor(this.stats.cost*0.7); }
-            upgrade(particles) { this.level++; this.stats.damage=Math.floor(this.stats.damage*1.3); this.stats.range=Math.floor(this.stats.range*1.1); this.stats.cooldown=Math.max(5,Math.floor(this.stats.cooldown*0.9)); this.upgradeCost=Math.floor(this.upgradeCost*1.5); for(let i=0;i<10;i++)particles.push(new Particle(this.x,this.y,'#FBBF24')); }
-            update(enemies, projectiles, particles) {
-                if(this.recoil>0)this.recoil=Math.max(0,this.recoil-0.5); if(this.cooldownTimer>0)this.cooldownTimer--;
-                let target=null, minDist=Infinity;
-                for(let e of enemies){ let dist=Math.hypot(e.x-this.x,e.y-this.y); if(dist<=this.stats.range){ if(!target||e.wpIndex>target.wpIndex||(e.wpIndex===target.wpIndex&&dist<minDist)){target=e;minDist=dist;} } }
-                if(target){ this.angle=Math.atan2(target.y-this.y,target.x-this.x); if(this.cooldownTimer<=0){ this.shoot(target, projectiles); this.cooldownTimer=this.stats.cooldown; this.recoil=4; } }
-            }
-            shoot(target, projectiles) { projectiles.push(new Projectile(this.x, this.y, target, this.stats.damage, this.type, this.stats.type==='splash'||this.stats.type==='slow')); }
-            draw(ctx) {
-                ctx.save(); ctx.translate(this.x,this.y); if(this.level>1){ctx.fillStyle='#FBBF24';for(let i=0;i<this.level;i++)ctx.fillRect(-14+(i*6),-20,4,4);} ctx.fillStyle='#374151';ctx.fillRect(-16,-16,32,32); ctx.rotate(this.angle); const off=-this.recoil; ctx.fillStyle=this.stats.color;
-                if(this.type==='laser'){ctx.fillStyle='#991B1B';ctx.fillRect(-8,-8,16,16);ctx.save();ctx.translate(off,0);ctx.fillStyle=this.stats.color;ctx.fillRect(0,-2,24,4);ctx.restore();}
-                else if(['rocket','mortar'].includes(this.type)){ctx.fillRect(-12,-12,24,24);ctx.save();ctx.translate(off,0);ctx.fillStyle='#000';ctx.fillRect(0,-6,28,12);ctx.restore();}
-                else if(this.type==='minigun'||this.type==='gatling'){ctx.fillRect(-10,-10,20,20);ctx.save();ctx.translate(off,0);ctx.fillStyle='#111';ctx.fillRect(0,-5,22,3);ctx.fillRect(0,2,22,3);ctx.restore();}
-                else{ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();ctx.save();ctx.translate(off,0);ctx.fillRect(0,-3,20,6);ctx.restore();} ctx.restore();
-            }
+            constructor(c,r,key){this.c=c;this.r=r;this.x=c*TILE_SIZE+20;this.y=r*TILE_SIZE+20;this.type=key;this.stats=JSON.parse(JSON.stringify(TOWER_TYPES[key]));this.cd=0;this.angle=0;this.recoil=0;this.level=1;this.upgradeCost=Math.floor(this.stats.cost*0.7);}
+            upgrade(parts){this.level++;this.stats.damage=Math.floor(this.stats.damage*1.3);this.stats.range=Math.floor(this.stats.range*1.1);this.stats.cooldown=Math.max(5,Math.floor(this.stats.cooldown*0.9));this.upgradeCost=Math.floor(this.upgradeCost*1.5);for(let i=0;i<10;i++)parts.push(new Particle(this.x,this.y,'#FBBF24'));}
+            update(enemies,projectiles){if(this.recoil>0)this.recoil=Math.max(0,this.recoil-0.5);if(this.cd>0)this.cd--;let t=null,min=Infinity;for(let e of enemies){let d=Math.hypot(e.x-this.x,e.y-this.y);if(d<=this.stats.range){if(!t||e.wpIndex>t.wpIndex||(e.wpIndex===t.wpIndex&&d<min)){t=e;min=d;}}}if(t){this.angle=Math.atan2(t.y-this.y,t.x-this.x);if(this.cd<=0){this.shoot(t, projectiles);this.cd=this.stats.cooldown;this.recoil=4;}}}
+            shoot(t,projs){projs.push(new Projectile(this.x,this.y,t,this.stats.damage,this.type,this.stats.type==='splash'||this.stats.type==='slow'));}
+            draw(ctx){ctx.save();ctx.translate(this.x,this.y);if(this.level>1){ctx.fillStyle='#FBBF24';for(let i=0;i<this.level;i++)ctx.fillRect(-14+(i*6),-20,4,4);}ctx.fillStyle='#374151';ctx.fillRect(-16,-16,32,32);ctx.rotate(this.angle);const off=-this.recoil;ctx.fillStyle=this.stats.color;if(this.type==='laser'){ctx.fillStyle='#991B1B';ctx.fillRect(-8,-8,16,16);ctx.save();ctx.translate(off,0);ctx.fillStyle=this.stats.color;ctx.fillRect(0,-2,24,4);ctx.restore();}else if(['rocket','mortar'].includes(this.type)){ctx.fillRect(-12,-12,24,24);ctx.save();ctx.translate(off,0);ctx.fillStyle='#000';ctx.fillRect(0,-6,28,12);ctx.restore();}else if(this.type==='minigun'||this.type==='gatling'){ctx.fillRect(-10,-10,20,20);ctx.save();ctx.translate(off,0);ctx.fillStyle='#111';ctx.fillRect(0,-5,22,3);ctx.fillRect(0,2,22,3);ctx.restore();}else{ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();ctx.save();ctx.translate(off,0);ctx.fillRect(0,-3,20,6);ctx.restore();}ctx.restore();}
         }
 
         // --- AUTH ---
@@ -369,21 +459,9 @@
             titan: { name: "Titan", hp: 2000, speed: 0.5, reward: 200, color: "#7F1D1D", icon: "fa-dragon", desc: "Massive boss unit." }
         };
         const MAP_DATA = [
-            {
-                name: "Zig-Zag Valley",
-                grid: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],[0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],[0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0],[0,1,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0],[0,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1],[0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
-                waypoints: [{x:0,y:1},{x:3,y:1},{x:3,y:4},{x:7,y:4},{x:7,y:2},{x:13,y:2},{x:13,y:4},{x:16,y:4},{x:16,y:6},{x:10,y:6},{x:10,y:9},{x:6,y:9},{x:6,y:7},{x:1,y:7},{x:1,y:11},{x:4,y:11},{x:4,y:13},{x:13,y:13},{x:13,y:10},{x:17,y:10},{x:17,y:12},{x:19,y:12}]
-            },
-            {
-                name: "Spiral Labyrinth",
-                grid: [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],[1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1],[1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1],[1,0,1,0,1,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0,0,0,0,0,0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1],[1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1],[1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
-                waypoints: [{x:0,y:0},{x:19,y:0},{x:19,y:14},{x:2,y:14},{x:2,y:2},{x:17,y:2},{x:17,y:12},{x:4,y:12},{x:4,y:4},{x:15,y:4},{x:15,y:10},{x:6,y:10},{x:6,y:6},{x:13,y:6},{x:13,y:8},{x:8,y:8}]
-            },
-            {
-                name: "Double Trouble",
-                grid: [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],[1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
-                waypoints: [{x:0,y:0},{x:0,y:2},{x:9,y:2},{x:9,y:5},{x:1,y:5},{x:1,y:8},{x:9,y:8},{x:9,y:11},{x:0,y:11},{x:0,y:14},{x:19,y:14},{x:19,y:11},{x:12,y:11},{x:12,y:8},{x:18,y:8},{x:18,y:5},{x:12,y:5},{x:12,y:2},{x:19,y:2},{x:19,y:0}]
-            }
+            { name: "Zig-Zag Valley", grid: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],[0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],[0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0],[0,1,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0],[0,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1],[0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]], waypoints: [{x:0,y:1},{x:3,y:1},{x:3,y:4},{x:7,y:4},{x:7,y:2},{x:13,y:2},{x:13,y:4},{x:16,y:4},{x:16,y:6},{x:10,y:6},{x:10,y:9},{x:6,y:9},{x:6,y:7},{x:1,y:7},{x:1,y:11},{x:4,y:11},{x:4,y:13},{x:13,y:13},{x:13,y:10},{x:17,y:10},{x:17,y:12},{x:19,y:12}] },
+            { name: "Spiral Labyrinth", grid: [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],[1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1],[1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1],[1,0,1,0,1,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0,0,0,0,0,0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1],[1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1],[1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]], waypoints: [{x:0,y:0},{x:19,y:0},{x:19,y:14},{x:2,y:14},{x:2,y:2},{x:17,y:2},{x:17,y:12},{x:4,y:12},{x:4,y:4},{x:15,y:4},{x:15,y:10},{x:6,y:10},{x:6,y:6},{x:13,y:6},{x:13,y:8},{x:8,y:8}] },
+            { name: "Double Trouble", grid: [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],[1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]], waypoints: [{x:0,y:0},{x:0,y:2},{x:9,y:2},{x:9,y:5},{x:1,y:5},{x:1,y:8},{x:9,y:8},{x:9,y:11},{x:0,y:11},{x:0,y:14},{x:19,y:14},{x:19,y:11},{x:12,y:11},{x:12,y:8},{x:18,y:8},{x:18,y:5},{x:12,y:5},{x:12,y:2},{x:19,y:2},{x:19,y:0}] }
         ];
 
         let currentUser=null, shopCoins=0, userUpgrades={startMoney:0}, userUnlockedTowers=['archer','cannon','minigun'], userDeck=['archer','cannon','minigun'];
@@ -417,20 +495,23 @@
                     container.appendChild(el);
                 });
             }
-            updateStats(c, m, l, w) { document.getElementById('navCoinDisplay').innerText=c; document.getElementById('moneyDisplay').innerText=`$ ${m}`; document.getElementById('livesDisplay').innerText=l; document.getElementById('waveDisplay').innerText=w; }
+            updateStats(c, m, l, w) {
+                document.getElementById('navCoinDisplay').innerText=c; document.getElementById('moneyDisplay').innerText=`$ ${m}`;
+                document.getElementById('livesDisplay').innerText=l; document.getElementById('waveDisplay').innerText=w;
+            }
             closeUpgradeMenu() { document.getElementById('upgradeMenu').classList.add('hidden'); if(gameSystem.game) gameSystem.game.selectedTowerInstance=null; }
         }
 
         class IntelManager {
-            constructor() { this.container = document.getElementById('intelContainer'); this.modal = document.getElementById('intelDetailsModal'); }
+            constructor() { this.c=document.getElementById('intelContainer'); this.m=document.getElementById('intelDetailsModal'); }
             render() {
-                this.container.innerHTML = '';
+                this.c.innerHTML='';
                 Object.entries(ENEMY_TYPES).forEach(([key, e]) => {
                     const el = document.createElement('div');
                     el.className = 'bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-red-500 cursor-pointer transition group flex flex-col items-center';
                     el.onclick = () => this.showDetails(key);
                     el.innerHTML = `<div class="w-12 h-12 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center text-2xl text-white shadow-lg group-hover:scale-110 transition" style="color:${e.color}"><i class="fa-solid ${e.icon}"></i></div><h3 class="mt-3 font-bold text-white text-sm">${e.name}</h3><span class="text-xs text-gray-500">Click for details</span>`;
-                    this.container.appendChild(el);
+                    this.c.appendChild(el);
                 });
             }
             showDetails(key) {
@@ -438,7 +519,7 @@
                 document.getElementById('intelTitle').innerText = e.name; document.getElementById('intelIcon').innerHTML = `<i class="fa-solid ${e.icon}"></i>`; document.getElementById('intelIcon').style.color = e.color;
                 document.getElementById('intelDesc').innerText = e.desc; document.getElementById('intelHP').innerText = e.hp;
                 document.getElementById('intelSpeed').innerText = e.speed; document.getElementById('intelGold').innerText = e.reward;
-                this.modal.classList.remove('hidden');
+                this.m.classList.remove('hidden');
             }
         }
 
@@ -487,7 +568,11 @@
         }
 
         class DeckManager {
-            constructor() { this.activeContainer = document.getElementById('activeDeckContainer'); this.collectionContainer = document.getElementById('collectionContainer'); this.countDisplay = document.getElementById('deckCount'); }
+            constructor() {
+                this.activeContainer = document.getElementById('activeDeckContainer');
+                this.collectionContainer = document.getElementById('collectionContainer');
+                this.countDisplay = document.getElementById('deckCount');
+            }
             render() {
                 this.countDisplay.innerText = gameSystem.data.deck.length;
                 this.activeContainer.innerHTML = ''; this.collectionContainer.innerHTML = '';
@@ -524,7 +609,7 @@
                 this.bindInput(); document.getElementById('startWaveBtn').addEventListener('click', () => this.startWave());
             }
             start(mapIndex) {
-                if (gameSystem.data.deck.length === 0) { alert("Deck is empty! Select at least 1 tower in Deck menu."); return; }
+                if (gameSystem.data.deck.length === 0) { alert("Deck is empty! Please select at least 1 tower."); return; }
                 const map = MAP_DATA[mapIndex]; currentMapIndex = mapIndex;
                 currentMapGrid = JSON.parse(JSON.stringify(map.grid));
                 currentWaypoints = map.waypoints.map(p => ({ x: p.x * TILE_SIZE + TILE_SIZE/2, y: p.y * TILE_SIZE + TILE_SIZE/2 }));
@@ -533,6 +618,8 @@
                 enemies = []; towers = []; projectiles = []; particles = []; floatingTexts = [];
                 waveInProgress = false; selectedTowerType = null; selectedTowerInstance = null;
                 this.renderTowerButtons(); gameSystem.ui.showScreen('game');
+                gameSystem.ui.closeUpgradeMenu();
+                document.getElementById('gameOverScreen').classList.add('hidden');
                 gameActive = true; gameOver = false;
                 this.loop();
             }
@@ -616,11 +703,11 @@
             surrender() { if(gameActive) this.endGame('surrender'); }
             endGame(reason) {
                 gameActive = false; gameOver = true; clearInterval(this.spawnTimer);
-                const coinsEarned = (Math.max(0, wave - 1) * 100) + (totalEnemiesKilled * 10);
+                const coinsEarned = totalEnemiesKilled; // 1 Kill = 1 Coin
                 gameSystem.data.addCoins(coinsEarned);
                 const t = document.getElementById('gameOverTitle'), s = document.getElementById('gameOverSubtitle');
                 if (reason === 'surrender') { t.innerText = "MISSION ABORTED"; t.className = "text-4xl md:text-6xl font-bold text-yellow-400 mb-2 pixel-font text-center leading-tight tracking-wider drop-shadow-lg"; s.innerText = "Troops Withdrawn"; }
-                else { t.innerText = "GAME OVER"; t.className = "text-4xl md:text-6xl font-bold text-red-600 mb-2 pixel-font text-center"; s.innerText = "Base Destroyed!"; }
+                else { t.innerText = "GAME OVER"; t.className = "text-4xl md:text-6xl font-bold text-red-600 mb-2 pixel-font text-center leading-tight tracking-wider drop-shadow-lg"; s.innerText = "Base Destroyed!"; }
                 document.getElementById('statWave').innerText = wave; document.getElementById('statKilled').innerText = totalEnemiesKilled; document.getElementById('statCoinsEarned').innerText = "+" + coinsEarned; document.getElementById('statTotalCoins').innerText = gameSystem.data.coins + coinsEarned;
                 document.getElementById('gameOverScreen').classList.remove('hidden');
             }
@@ -668,8 +755,8 @@
                     const btn = document.getElementById('startWaveBtn');
                     btn.innerText = "START WAVE " + wave; btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); btn.classList.add('animate-pulse');
                     floatingTexts.push(new FloatingText(this.canvas.width/2, this.canvas.height/2, "WAVE COMPLETE!", '#FFF', 120));
-                    money += 100; // Wave clear bonus
-                    floatingTexts.push(new FloatingText(this.canvas.width/2, this.canvas.height/2 + 30, "+$100 BONUS", '#FACC15'));
+                    money += 100; // Wave clear bonus (In-game money, not Shop Coins)
+                    floatingTexts.push(new FloatingText(this.canvas.width/2, this.canvas.height/2 + 30, "+$100 FUNDS", '#FACC15'));
                 }
                 towers.forEach(t => t.update(enemies, projectiles, particles));
                 for (let i = projectiles.length - 1; i >= 0; i--) { if (projectiles[i].active === false) { projectiles.splice(i, 1); continue; } projectiles[i].update(enemies, particles); }
