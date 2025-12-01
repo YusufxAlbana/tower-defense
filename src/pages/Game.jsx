@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import {
   Heart, Coins, Shield, Zap, Crosshair, Skull, Ghost, Play, Pause,
   RotateCcw, ArrowUpCircle, Target, Flame, Snowflake, TrendingUp,
   XCircle, Info, CheckCircle2, Volume2, VolumeX, Settings, Trophy,
-  Swords, Sparkles, Zap as Lightning, Wind
+  Swords, Sparkles, Zap as Lightning, Wind, Flag
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { TOWER_TYPES, MAPS, DIFFICULTY_CONFIG, usePlayerStore } from '../store/gameStore';
+import SurrenderModal from '../components/SurrenderModal';
+import GameStats from './GameStats';
 
 // --- UTILS ---
 function cn(...inputs) {
@@ -48,41 +50,13 @@ const getResponsiveCellSize = () => {
 
 const CELL_SIZE = getResponsiveCellSize();
 
-const PATH_COORDINATES = [
-  { x: 0, y: 4 }, { x: 1, y: 4 }, { x: 2, y: 4 }, { x: 2, y: 3 }, { x: 2, y: 2 },
-  { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }, { x: 5, y: 3 }, { x: 5, y: 4 },
-  { x: 5, y: 5 }, { x: 5, y: 6 }, { x: 6, y: 6 }, { x: 7, y: 6 }, { x: 8, y: 6 },
-  { x: 8, y: 5 }, { x: 8, y: 4 }, { x: 8, y: 3 }, { x: 8, y: 2 }, { x: 9, y: 2 },
-  { x: 10, y: 2 }, { x: 10, y: 3 }, { x: 10, y: 4 }, { x: 10, y: 5 }, { x: 10, y: 6 },
-  { x: 11, y: 6 }, { x: 12, y: 6 }, { x: 13, y: 6 }
-];
-
-const TOWER_TYPES = {
-  ARCHER: { 
-    id: 'ARCHER', name: 'Ballista', cost: 60, range: 3.5, damage: 15, cooldown: 30, 
-    color: 'from-emerald-500 to-teal-600', ringColor: 'text-emerald-500', icon: Crosshair, type: 'physical',
-    desc: 'Single Target • High Speed',
-    ability: 'MULTISHOT', abilityDesc: 'Shoots 3 arrows at once', abilityCooldown: 180
-  },
-  CANNON: { 
-    id: 'CANNON', name: 'Blaster', cost: 120, range: 2.5, damage: 40, cooldown: 90, splashRadius: 1.5,
-    color: 'from-orange-500 to-red-600', ringColor: 'text-orange-500', icon: Flame, type: 'explosive',
-    desc: 'Area Damage • Heavy',
-    ability: 'NAPALM', abilityDesc: 'Burns ground for 5s', abilityCooldown: 240
-  },
-  MAGIC: { 
-    id: 'MAGIC', name: 'Arcane', cost: 150, range: 4.0, damage: 25, cooldown: 45,
-    color: 'from-violet-500 to-indigo-600', ringColor: 'text-purple-500', icon: Zap, type: 'magic',
-    desc: 'Long Range • Pierce',
-    ability: 'CHAIN_LIGHTNING', abilityDesc: 'Chains to 3 enemies', abilityCooldown: 200
-  },
-  ICE: { 
-    id: 'ICE', name: 'Cryo', cost: 180, range: 3.0, damage: 10, cooldown: 40,
-    color: 'from-cyan-400 to-blue-500', ringColor: 'text-cyan-400', icon: Snowflake, type: 'ice',
-    desc: 'Crowd Control • Slow',
-    ability: 'BLIZZARD', abilityDesc: 'Freezes area for 3s', abilityCooldown: 220
-  }
+// Get selected map path
+const getMapPath = () => {
+  const selectedMapId = localStorage.getItem('tower-defense-map') || 'FOREST';
+  return MAPS[selectedMapId]?.path || MAPS.FOREST.path;
 };
+
+const PATH_COORDINATES = getMapPath();
 
 const ENEMY_TYPES = {
   GOBLIN: { id: 'GOBLIN', name: 'Scout', hp: 30, speed: 0.045, reward: 8, color: 'bg-green-500', icon: Skull, type: 'ground', armor: 0 },
@@ -120,10 +94,8 @@ const playSound = (type) => {
 };
 
 
-// --- ZUSTAND STORE WITH PERSISTENCE ---
-const useGameStore = create(
-  persist(
-    (set, get) => ({
+// --- ZUSTAND STORE ---
+const useGameStore = create((set, get) => ({
       // Game State
       gold: 300, lives: 20, wave: 1, isPlaying: false, gameOver: false, waveTimer: 0,
       enemies: [], towers: [], projectiles: [], particles: [], floatingTexts: [], selectedTile: null, score: 0,
@@ -165,17 +137,21 @@ const useGameStore = create(
       pauseGame: () => set({ isPlaying: false }),
       
       restartGame: () => {
-        const { highestWave, wave, score, highScores } = get();
+        const { highestWave, wave, score, highScores, difficulty } = get();
         const newHighest = Math.max(highestWave, wave);
         const newScores = [...highScores, { score, wave, date: Date.now() }]
           .sort((a, b) => b.score - a.score)
           .slice(0, 10);
         
+        const diffConfig = DIFFICULTY_CONFIG[difficulty] || DIFFICULTY_CONFIG.normal;
+        
         set({
-          gold: 300, lives: 20, wave: 1, isPlaying: true, gameOver: false,
+          gold: diffConfig.startingGold, 
+          lives: diffConfig.startingLives, 
+          wave: 1, isPlaying: true, gameOver: false,
           waveTimer: WAVE_INTERVAL, enemies: [], towers: [], projectiles: [], 
           particles: [], floatingTexts: [], score: 0, selectedTile: null,
-          highestWave: newHighest, highScores: newScores
+          highestWave: newHighest, highScores: newScores, totalKills: 0
         });
       },
 
@@ -250,16 +226,19 @@ const useGameStore = create(
       spawnEnemy: (enemyType) => {
         const { wave, difficulty } = get();
         const cfg = ENEMY_TYPES[enemyType];
-        const diffMultiplier = { easy: 0.8, normal: 1, hard: 1.3 }[difficulty];
-        const hp = Math.floor(cfg.hp * Math.pow(1.15, wave - 1) * diffMultiplier);
+        const diffConfig = DIFFICULTY_CONFIG[difficulty] || DIFFICULTY_CONFIG.normal;
+        const hp = Math.floor(cfg.hp * Math.pow(1.15, wave - 1) * diffConfig.enemyHpMultiplier);
+        const speed = cfg.speed * diffConfig.enemySpeedMultiplier;
+        const reward = Math.floor(cfg.reward * diffConfig.goldMultiplier);
+        
         set(s => ({ 
           enemies: [...s.enemies, { 
             id: Math.random().toString(36).substr(2, 9), 
             type: enemyType, pathIndex: 0, 
             x: PATH_COORDINATES[0].x, y: PATH_COORDINATES[0].y, progress: 0, 
             maxHp: hp, hp, 
-            baseSpeed: cfg.speed, speed: cfg.speed, 
-            reward: cfg.reward, frozen: 0, burning: 0,
+            baseSpeed: speed, speed: speed, 
+            reward: reward, frozen: 0, burning: 0,
             armor: cfg.armor || 0
           }] 
         }));
@@ -458,22 +437,7 @@ const useGameStore = create(
 
         get().checkAchievements();
       }
-    }),
-    {
-      name: 'tower-defense-storage',
-      partialize: (state) => ({
-        highestWave: state.highestWave,
-        achievements: state.achievements,
-        highScores: state.highScores,
-        totalKills: state.totalKills,
-        totalGoldEarned: state.totalGoldEarned,
-        towersBuilt: state.towersBuilt,
-        soundEnabled: state.soundEnabled,
-        difficulty: state.difficulty
-      })
-    }
-  )
-);
+    }));
 
 
 // --- COMPONENTS ---
@@ -489,18 +453,18 @@ const GridCell = ({ x, y, isPathCell, onClick, isSelected, hasTower }) => (
     className={cn(
       "w-full h-full relative flex items-center justify-center transition-all duration-200 group",
       isPathCell 
-        ? "bg-slate-800/40 border border-slate-700/20" 
-        : "bg-slate-900/30 hover:bg-slate-800/50 border border-slate-800/30 hover:border-indigo-500/40 cursor-pointer", 
-      isSelected && !isPathCell && "ring-2 ring-indigo-400 ring-inset bg-indigo-500/20 z-10 shadow-[inset_0_0_30px_rgba(99,102,241,0.2)]",
+        ? "bg-amber-800/80 border border-amber-900/40" 
+        : "bg-emerald-800/60 hover:bg-emerald-700/70 border border-emerald-900/30 hover:border-emerald-600/40 cursor-pointer", 
+      isSelected && !isPathCell && "ring-2 ring-emerald-400 ring-inset bg-emerald-500/20 z-10 shadow-[inset_0_0_30px_rgba(16,185,129,0.2)]",
       hasTower && "cursor-pointer"
     )}>
     {isPathCell && (
-      <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(99,102,241,0.08)_0%,_transparent_70%)] opacity-60" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(217,119,6,0.15)_0%,_transparent_70%)] opacity-60" />
     )}
     {!isPathCell && !hasTower && (
       <div className={cn(
-        "w-1.5 h-1.5 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-40",
-        isSelected ? "bg-indigo-400 scale-150 opacity-80 shadow-[0_0_8px_rgba(99,102,241,0.6)]" : "bg-slate-600"
+        "w-1.5 h-1.5 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-60",
+        isSelected ? "bg-emerald-300 scale-150 opacity-80 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-emerald-600"
       )} />
     )}
   </div>
@@ -525,7 +489,7 @@ const MobileStatPill = ({ icon: Icon, value, colorClass }) => (
   </div>
 );
 
-const TopBar = () => {
+const TopBar = ({ onSurrender }) => {
   const { gold, lives, wave, score, soundEnabled, toggleSound } = useGameStore();
   const navigate = useNavigate();
   const [showStats, setShowStats] = useState(false);
@@ -580,6 +544,14 @@ const TopBar = () => {
             {soundEnabled ? <Volume2 size={isMobile ? 14 : 18} className="text-slate-300" /> : <VolumeX size={isMobile ? 14 : 18} className="text-slate-500" />}
           </button>
           
+          <button 
+            onClick={onSurrender}
+            className="w-8 h-8 md:w-10 md:h-10 bg-rose-600/80 hover:bg-rose-500 rounded-lg flex items-center justify-center border border-rose-700/50 transition-all hover:scale-110"
+            title="Surrender"
+          >
+            <Flag size={isMobile ? 14 : 18} className="text-white" />
+          </button>
+          
           {!isMobile && (
             <button 
               onClick={() => setShowStats(!showStats)}
@@ -622,9 +594,13 @@ const TopBar = () => {
 
 const ControlPanel = () => {
   const { selectedTile, towers, buildTower, upgradeTower, sellTower, gold, isPlaying, startGame, pauseGame, restartGame, gameOver, waveTimer, useAbility } = useGameStore();
+  const { activeDeck } = usePlayerStore();
   const selectedTower = selectedTile ? towers.find(t => t.x === selectedTile.x && t.y === selectedTile.y) : null;
   const canBuild = selectedTile && !selectedTower && !isPath(selectedTile.x, selectedTile.y);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  
+  // Get only towers from active deck
+  const deckTowers = activeDeck.map(id => TOWER_TYPES[id]).filter(Boolean);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -661,7 +637,7 @@ const ControlPanel = () => {
 
           {canBuild && (
             <div className="grid grid-cols-2 gap-2">
-              {Object.values(TOWER_TYPES).map(t => {
+              {deckTowers.map(t => {
                 const canAfford = gold >= t.cost;
                 return (
                   <button 
@@ -793,10 +769,10 @@ const ControlPanel = () => {
           <div className="animate-in slide-in-from-right duration-300">
             <div className="flex items-center gap-2 mb-4">
               <ArrowUpCircle size={12} className="text-indigo-400" />
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Build Tower</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Build Tower (Deck)</h3>
             </div>
             <div className="space-y-2">
-              {Object.values(TOWER_TYPES).map(t => {
+              {deckTowers.map(t => {
                 const canAfford = gold >= t.cost;
                 return (
                   <button 
@@ -824,9 +800,6 @@ const ControlPanel = () => {
                         </div>
                       </div>
                       <div className="text-[9px] font-medium text-slate-500 uppercase">{t.desc}</div>
-                      <div className="text-[8px] text-indigo-400 mt-1 flex items-center gap-1">
-                        <Sparkles size={8} /> {t.abilityDesc}
-                      </div>
                     </div>
                   </button>
                 );
@@ -1036,9 +1009,39 @@ const GameLoop = () => {
 
 // --- MAIN GAME PAGE ---
 const GamePage = () => {
-  const { enemies, towers, projectiles, particles, floatingTexts, selectedTile, selectTile, gameOver, restartGame, deselect, score, wave } = useGameStore();
+  const { enemies, towers, projectiles, particles, floatingTexts, selectedTile, selectTile, gameOver, restartGame, deselect, score, wave, totalKills, pauseGame, isPlaying } = useGameStore();
   const navigate = useNavigate();
   const [cellSize, setCellSize] = useState(CELL_SIZE);
+  const [showSurrender, setShowSurrender] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [gameStats, setGameStats] = useState(null);
+
+  const handleSurrender = () => {
+    pauseGame();
+    const goldEarned = totalKills;
+    setGameStats({
+      wave,
+      kills: totalKills,
+      goldEarned,
+      difficulty: localStorage.getItem('tower-defense-difficulty') || 'normal',
+      mapName: localStorage.getItem('tower-defense-map') || 'FOREST'
+    });
+    setShowSurrender(false);
+    setShowStats(true);
+    
+    // Add coins to player store
+    const { addCoins } = require('../store/gameStore').usePlayerStore.getState();
+    addCoins(goldEarned);
+  };
+
+  const handleRestart = () => {
+    setShowStats(false);
+    restartGame();
+  };
+
+  const handleHome = () => {
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -1049,10 +1052,33 @@ const GamePage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    // Initialize game with selected difficulty
+    const difficulty = localStorage.getItem('tower-defense-difficulty') || 'normal';
+    const { setDifficulty, restartGame } = useGameStore.getState();
+    setDifficulty(difficulty);
+    restartGame();
+  }, []);
+
   return (
     <div className="w-full h-screen bg-[#020617] flex flex-col font-sans select-none overflow-hidden text-slate-200">
       <GameLoop />
-      <TopBar />
+      <TopBar onSurrender={() => setShowSurrender(true)} />
+      
+      {showSurrender && (
+        <SurrenderModal
+          onConfirm={handleSurrender}
+          onCancel={() => setShowSurrender(false)}
+        />
+      )}
+      
+      {showStats && gameStats && (
+        <GameStats
+          stats={gameStats}
+          onRestart={handleRestart}
+          onHome={handleHome}
+        />
+      )}
 
       <div className="flex-1 flex overflow-hidden pt-16 md:pt-20 pb-0 lg:pb-0">
         <div className="flex-1 relative flex items-center justify-center overflow-hidden p-2 md:p-4 lg:p-6" onClick={deselect}>
@@ -1245,47 +1271,24 @@ const GamePage = () => {
             ))}
           </div>
 
-          {/* Game Over Modal */}
-          {gameOver && (
-            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl z-[100] flex flex-col items-center justify-center animate-in fade-in duration-500 p-4">
-              <div className="text-center space-y-4 md:space-y-6 max-w-md w-full">
-                <h2 className="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-rose-500 via-rose-600 to-rose-900 drop-shadow-2xl animate-pulse">
-                  DEFEAT
-                </h2>
-                <div className="text-slate-400 text-sm md:text-base font-medium tracking-[0.2em] uppercase">
-                  Defense System Offline
-                </div>
-                
-                {/* Final Stats */}
-                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 md:p-6 space-y-3">
-                  <div className="flex justify-between text-xs md:text-sm">
-                    <span className="text-slate-500">Final Wave</span>
-                    <span className="text-white font-bold">{wave}</span>
-                  </div>
-                  <div className="flex justify-between text-xs md:text-sm">
-                    <span className="text-slate-500">Final Score</span>
-                    <span className="text-emerald-400 font-bold">{score}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-                  <button 
-                    onClick={restartGame} 
-                    className="flex-1 px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs md:text-sm tracking-widest rounded-xl hover:scale-105 transition-all shadow-lg shadow-indigo-900/30"
-                  >
-                    <RotateCcw size={14} className="inline mr-2" />
-                    RESTART
-                  </button>
-                  <button 
-                    onClick={() => navigate('/')} 
-                    className="flex-1 px-6 md:px-8 py-3 md:py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs md:text-sm tracking-widest rounded-xl hover:scale-105 transition-all"
-                  >
-                    HOME
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Game Over - Show Stats */}
+          {gameOver && !showStats && (() => {
+            const goldEarned = totalKills;
+            const { addCoins } = require('../store/gameStore').usePlayerStore.getState();
+            addCoins(goldEarned);
+            
+            if (!gameStats) {
+              setGameStats({
+                wave,
+                kills: totalKills,
+                goldEarned,
+                difficulty: localStorage.getItem('tower-defense-difficulty') || 'normal',
+                mapName: MAPS[localStorage.getItem('tower-defense-map') || 'FOREST']?.name || 'Forest Path'
+              });
+              setShowStats(true);
+            }
+            return null;
+          })()}
         </div>
 
         {window.innerWidth >= 1024 && <ControlPanel />}

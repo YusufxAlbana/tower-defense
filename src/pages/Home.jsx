@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Cpu, Map as MapIcon, Lock, Zap, Shield, Flame, Trophy, Target } from 'lucide-react';
+import { Play, Cpu, Map as MapIcon, Zap, Shield, Flame, Trophy, Mountain, Trees, Flame as VolcanoIcon } from 'lucide-react';
+import { MAPS } from '../store/gameStore';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [difficulty, setDifficulty] = useState('normal');
   const [showDifficulty, setShowDifficulty] = useState(false);
+  const [showMapSelect, setShowMapSelect] = useState(false);
+  const [selectedMap, setSelectedMap] = useState(null);
 
   const difficulties = [
     { id: 'easy', name: 'Easy', desc: 'Relaxed gameplay • More gold', icon: Shield, color: 'from-emerald-500 to-teal-500', border: 'border-emerald-500' },
@@ -13,9 +16,21 @@ const HomePage = () => {
     { id: 'hard', name: 'Hard', desc: 'Intense battle • More enemies', icon: Flame, color: 'from-orange-500 to-red-500', border: 'border-red-500' }
   ];
 
+  const handleDifficultyNext = () => {
+    setShowMapSelect(true);
+  };
+
   const handleStart = () => {
+    if (!selectedMap) return;
     localStorage.setItem('tower-defense-difficulty', difficulty);
+    localStorage.setItem('tower-defense-map', selectedMap);
     navigate('/game');
+  };
+
+  const mapIcons = {
+    FOREST: Trees,
+    DESERT: Mountain,
+    VOLCANO: VolcanoIcon
   };
 
   return (
@@ -52,7 +67,7 @@ const HomePage = () => {
             </p>
           </div>
 
-          {/* Difficulty Selector */}
+          {/* Difficulty & Map Selector */}
           {!showDifficulty ? (
             <button
               onClick={() => setShowDifficulty(true)}
@@ -63,7 +78,7 @@ const HomePage = () => {
                 <Play size={18} /> Start Game
               </span>
             </button>
-          ) : (
+          ) : !showMapSelect ? (
             <div className="mb-12 w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h3 className="text-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
                 Select Difficulty
@@ -88,34 +103,92 @@ const HomePage = () => {
                 ))}
               </div>
               <button
-                onClick={handleStart}
+                onClick={handleDifficultyNext}
                 className="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg hover:scale-[1.02] transition-all"
               >
-                <Play size={18} className="inline mr-2" />
-                Start Game
+                Next: Select Map
               </button>
+            </div>
+          ) : (
+            <div className="mb-12 w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 className="text-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
+                Select Map
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {Object.values(MAPS).map(map => {
+                  const MapIcon = mapIcons[map.id];
+                  return (
+                    <button
+                      key={map.id}
+                      onClick={() => setSelectedMap(map.id)}
+                      className={`p-6 rounded-xl border-2 transition-all ${
+                        selectedMap === map.id
+                          ? 'border-indigo-500 bg-slate-800/80 scale-105 shadow-lg shadow-indigo-900/30'
+                          : 'border-slate-800 bg-slate-900/50 hover:bg-slate-800/50'
+                      }`}
+                    >
+                      <div className={`w-16 h-16 mx-auto mb-3 rounded-lg ${map.grassColor} flex items-center justify-center border-2 ${map.pathColor.replace('bg-', 'border-')}`}>
+                        <MapIcon size={32} className="text-white" />
+                      </div>
+                      <div className="text-base font-bold text-white mb-1">{map.name}</div>
+                      <div className="text-xs text-slate-500 mb-2">{map.description}</div>
+                      <div className="text-xs text-slate-400 font-semibold">{map.difficulty}</div>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowMapSelect(false)}
+                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg hover:scale-[1.02] transition-all"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleStart}
+                  disabled={!selectedMap}
+                  className={`flex-1 py-4 rounded-xl font-bold text-sm tracking-widest uppercase shadow-lg hover:scale-[1.02] transition-all ${
+                    selectedMap
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white'
+                      : 'bg-slate-800/50 text-slate-600 cursor-not-allowed'
+                  }`}
+                >
+                  <Play size={18} className="inline mr-2" />
+                  Start Game
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '400ms' }}>
-            <FeatureCard
-              icon={Cpu}
-              title="Advanced AI"
-              description="Enemies adapt to your layout. Create complex mazes to outsmart the swarm."
+          {/* Quick Access Menu */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '400ms' }}>
+            <MenuCard
+              icon={Shield}
+              title="Play"
+              description="Start mission"
               color="indigo"
+              onClick={() => setShowDifficulty(true)}
             />
-            <FeatureCard
+            <MenuCard
               icon={MapIcon}
-              title="Tactical Maps"
-              description="Strategic placement is key to surviving higher waves."
+              title="Store"
+              description="Buy towers"
               color="emerald"
+              onClick={() => navigate('/store')}
             />
-            <FeatureCard
+            <MenuCard
+              icon={Cpu}
+              title="Deck"
+              description="Manage loadout"
+              color="purple"
+              onClick={() => navigate('/deck')}
+            />
+            <MenuCard
               icon={Trophy}
-              title="Achievements"
-              description="Unlock achievements and compete for high scores."
+              title="Intel"
+              description="Enemy info"
               color="rose"
+              onClick={() => navigate('/info')}
             />
           </div>
         </div>
@@ -129,23 +202,27 @@ const HomePage = () => {
   );
 };
 
-const FeatureCard = ({ icon: Icon, title, description, color }) => {
+const MenuCard = ({ icon: Icon, title, description, color, onClick }) => {
   const colorClasses = {
-    indigo: 'bg-indigo-500/20 text-indigo-400',
-    emerald: 'bg-emerald-500/20 text-emerald-400',
-    rose: 'bg-rose-500/20 text-rose-400',
+    indigo: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30 hover:border-indigo-500',
+    emerald: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:border-emerald-500',
+    rose: 'bg-rose-500/20 text-rose-400 border-rose-500/30 hover:border-rose-500',
+    purple: 'bg-purple-500/20 text-purple-400 border-purple-500/30 hover:border-purple-500',
   };
 
   return (
-    <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800/50 p-6 rounded-2xl hover:bg-slate-800/50 hover:border-slate-700/50 transition-all group hover:scale-105">
+    <button
+      onClick={onClick}
+      className={`bg-slate-900/50 backdrop-blur-sm border-2 p-6 rounded-2xl hover:bg-slate-800/50 transition-all group hover:scale-105 cursor-pointer ${colorClasses[color]}`}
+    >
       <div
-        className={`w-11 h-11 ${colorClasses[color]} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+        className={`w-12 h-12 ${colorClasses[color].split(' ')[0]} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto`}
       >
-        <Icon size={20} />
+        <Icon size={24} />
       </div>
-      <h3 className="text-base font-bold text-white mb-1.5">{title}</h3>
+      <h3 className="text-base font-bold text-white mb-1">{title}</h3>
       <p className="text-xs text-slate-500 leading-relaxed">{description}</p>
-    </div>
+    </button>
   );
 };
 
